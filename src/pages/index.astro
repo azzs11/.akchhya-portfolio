@@ -1,16 +1,25 @@
 ---
+// Temporary home: the character select arrives in phase 4.
+import Base from '../layouts/Base.astro';
+import { rooms } from '../data/rooms';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base title="akchhya singh" description="Researcher, builder, marketer, reader. Pick a version.">
+  <section class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 sm:px-8">
+    <h1 class="text-display">hi, i’m akchhya. pick a version.</h1>
+    <ul class="flex flex-wrap gap-3">
+      {
+        rooms.map((r) => (
+          <li data-room={r.key}>
+            <a
+              href={r.href}
+              class="inline-block rounded-card border-2 border-line bg-accent px-4 py-2 font-semibold text-on-accent no-underline shadow-cut"
+            >
+              {r.name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>
