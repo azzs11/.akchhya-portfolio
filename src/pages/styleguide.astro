@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import type { RoomKey as Room } from '../data/rooms';
+import { rooms } from '../data/rooms';
 import Button from '../components/Button.astro';
 import CatalogueCard from '../components/CatalogueCard.astro';
 
@@ -10,7 +10,7 @@ const palette = [
   { name: 'plum', hex: '#4A1468', role: 'headings, primary buttons', note: 'on paper 11.8:1', cls: 'bg-plum text-paper' },
   { name: 'lilac', hex: '#C9B6FF', role: 'the researcher', note: 'ink on it 10.2:1', cls: 'bg-lilac text-ink' },
   { name: 'lime', hex: '#D4F36B', role: 'the technobrat', note: 'ink on it 14.8:1', cls: 'bg-lime text-ink' },
-  { name: 'tangerine', hex: '#FF6B2C', role: 'the marketer', note: 'ink on it 6.5:1', cls: 'bg-tangerine text-ink' },
+  { name: 'tangerine', hex: '#FF6B2C', role: 'the product nerd', note: 'ink on it 6.5:1', cls: 'bg-tangerine text-ink' },
   { name: 'sky', hex: '#9FD3FF', role: 'the creative caterpillar', note: 'ink on it 11.6:1', cls: 'bg-sky text-ink' },
   { name: 'bubblegum', hex: '#FF9ECF', role: 'the organiser', note: 'ink on it 9.7:1', cls: 'bg-bubblegum text-ink' },
 ];
@@ -27,13 +27,6 @@ const scale = [
   { name: 'serif', spec: 'Instrument Serif italic · editorial only', cls: 'font-serif italic text-h2 font-normal', sample: '“the part of me that isn’t optimising anything.”' },
 ];
 
-const rooms: { key: Room; name: string; label: string; intro: string }[] = [
-  { key: 'researcher', name: 'the researcher', label: 'research', intro: 'i like data that’s messy, incomplete and hiding something.' },
-  { key: 'technobrat', name: 'the technobrat', label: 'engineering & projects', intro: 'things i built that didn’t fall over. mostly.' },
-  { key: 'marketer', name: 'the marketer', label: 'growth & marketing', intro: 'i make people care about products.' },
-  { key: 'caterpillar', name: 'the creative caterpillar', label: 'writing & art', intro: 'essays, poems, sketches.' },
-  { key: 'organiser', name: 'the organiser', label: 'community & organising', intro: 'getting 40 people into one room on time.' },
-];
 
 const themes = ['light', 'night'] as const;
 ---

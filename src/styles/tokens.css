@@ -116,6 +116,6 @@
 
 [data-room="researcher"] { --accent: var(--color-lilac); }
 [data-room="technobrat"] { --accent: var(--color-lime); }
-[data-room="marketer"] { --accent: var(--color-tangerine); }
+[data-room="product"] { --accent: var(--color-tangerine); }
 [data-room="caterpillar"] { --accent: var(--color-sky); }
 [data-room="organiser"] { --accent: var(--color-bubblegum); }

@@ -4,9 +4,9 @@ My personal site, live at [akchhya.xyz](https://akchhya.xyz) once it's deployed.
 
 ## The rooms
 
-- **the researcher** (`/research`): data, questions, the paper, where I want to go next
 - **the technobrat** (`/build`): engineering projects with case studies and live demos
-- **the marketer** (`/growth`): growth work, launches and copy rewrites
+- **the researcher** (`/research`): data, questions, the paper, where I want to go next
+- **the product nerd** (`/product`): product and growth work, launches and copy rewrites
 - **the creative caterpillar** (`/reading-room`): essays, poems, sketches and paintings
 - **the organiser** (`/organiser`): newsletters, communities and getting people in one room
 

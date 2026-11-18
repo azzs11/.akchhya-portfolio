@@ -1,4 +1,4 @@
-export type RoomKey = 'researcher' | 'technobrat' | 'marketer' | 'caterpillar' | 'organiser';
+export type RoomKey = 'technobrat' | 'researcher' | 'product' | 'caterpillar' | 'organiser';
 
 export interface Room {
   key: RoomKey;
@@ -12,13 +12,6 @@ export interface Room {
 
 export const rooms: Room[] = [
   {
-    key: 'researcher',
-    name: 'the researcher',
-    label: 'research',
-    href: '/research',
-    intro: 'i like data that’s messy, incomplete and hiding something.',
-  },
-  {
     key: 'technobrat',
     name: 'the technobrat',
     label: 'engineering & projects',
@@ -26,10 +19,17 @@ export const rooms: Room[] = [
     intro: 'things i built that didn’t fall over. mostly.',
   },
   {
-    key: 'marketer',
-    name: 'the marketer',
-    label: 'growth & marketing',
-    href: '/growth',
+    key: 'researcher',
+    name: 'the researcher',
+    label: 'research',
+    href: '/research',
+    intro: 'i like data that’s messy, incomplete and hiding something.',
+  },
+  {
+    key: 'product',
+    name: 'the product nerd',
+    label: 'product & growth',
+    href: '/product',
     intro: 'i make people care about products. sometimes in 280 characters.',
   },
   {
