@@ -1,0 +1,103 @@
+---
+import { rooms } from '../data/rooms';
+---
+
+<section aria-labelledby="pick-title">
+  <h2 id="pick-title" class="sr-only">pick a room</h2>
+  <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5" data-character-select>
+    {
+      rooms.map((r, i) => (
+        <li
+          data-room={r.key}
+          class={`transition-[rotate] duration-300 ease-spring motion-safe:focus-within:rotate-0 motion-safe:hover:rotate-0 ${
+            i % 2 ? 'motion-safe:rotate-[var(--tilt)]' : 'motion-safe:-rotate-[var(--tilt)]'
+          }`}
+        >
+          <a
+            href={r.href}
+            data-preview={r.key}
+            class="room-card flex h-full flex-col gap-3 rounded-card border-2 border-line bg-surface p-5 text-text no-underline shadow-cut hover:bg-accent hover:text-on-accent hover:shadow-cut-lg focus-visible:bg-accent focus-visible:text-on-accent"
+          >
+            <span class="h-3 w-12 rounded-full border-2 border-line bg-accent" aria-hidden="true" />
+            <span class="font-display text-h3 font-extrabold">{r.name}</span>
+            <span class="label">{r.label}</span>
+            <span class="text-small">{r.intro}</span>
+            <span class="label mt-auto pt-2" aria-hidden="true">enter →</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .room-card {
+    transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition:
+      transform var(--duration-slow) var(--ease-spring),
+      box-shadow var(--duration-quick) ease,
+      background-color var(--duration-quick) ease,
+      color var(--duration-quick) ease;
+  }
+
+  /* follow the cursor closely while tilting, spring back on leave */
+  .room-card[data-tilting] {
+    transition-duration: 80ms, var(--duration-quick), var(--duration-quick), var(--duration-quick);
+  }
+</style>
+
+<script>
+  // Hover or focus a card: the whole page previews that room's accent.
+  // Mouse only: the card tilts toward the cursor.
+  const list = document.querySelector<HTMLElement>('[data-character-select]');
+
+  if (list) {
+    const html = document.documentElement;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+    const MAX_TILT = 10; // degrees
+
+    const preview = (room: string) => {
+      if (!('previewFrom' in html.dataset)) html.dataset.previewFrom = html.dataset.room ?? '';
+      html.dataset.room = room;
+    };
+
+    const restore = () => {
+      if (!('previewFrom' in html.dataset)) return;
+      const from = html.dataset.previewFrom;
+      if (from) html.dataset.room = from;
+      else delete html.dataset.room;
+      delete html.dataset.previewFrom;
+    };
+
+    list.querySelectorAll<HTMLAnchorElement>('a[data-preview]').forEach((card) => {
+      const room = card.dataset.preview!;
+
+      card.addEventListener('pointerenter', () => preview(room));
+      card.addEventListener('focus', () => preview(room));
+
+      card.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse' || reduce.matches) return;
+        const box = card.getBoundingClientRect();
+        const x = (e.clientX - box.left) / box.width - 0.5;
+        const y = (e.clientY - box.top) / box.height - 0.5;
+        card.style.setProperty('--ry', `${x * MAX_TILT}deg`);
+        card.style.setProperty('--rx', `${-y * MAX_TILT}deg`);
+        card.dataset.tilting = '';
+      });
+
+      card.addEventListener('pointerleave', () => {
+        card.style.removeProperty('--rx');
+        card.style.removeProperty('--ry');
+        delete card.dataset.tilting;
+      });
+    });
+
+    list.addEventListener('pointerleave', restore);
+    list.addEventListener('focusout', (e) => {
+      if (!list.contains(e.relatedTarget as Node | null)) restore();
+    });
+
+    // coming back via the back button shouldn't keep a stale preview
+    addEventListener('pageshow', (e) => e.persisted && restore());
+  }
+</script>
