@@ -1,5 +1,6 @@
 ---
-import Base, { type Room } from '../layouts/Base.astro';
+import Base from '../layouts/Base.astro';
+import type { RoomKey as Room } from '../data/rooms';
 import Button from '../components/Button.astro';
 import CatalogueCard from '../components/CatalogueCard.astro';
 
@@ -38,7 +39,7 @@ const themes = ['light', 'night'] as const;
 ---
 
 <Base title="styleguide · akchhya" description="Design tokens, type scale and components for akchhya.xyz." noindex>
-  <main class="mx-auto flex max-w-6xl flex-col gap-20 px-4 py-16 sm:px-8">
+  <div class="mx-auto flex max-w-6xl flex-col gap-20 px-4 py-16 sm:px-8">
     <header class="flex flex-col gap-4">
       <p class="label">phase 2 · design system</p>
       <h1 class="text-h1">styleguide</h1>
@@ -151,5 +152,5 @@ const themes = ['light', 'night'] as const;
         </div>
       </section>
     ))}
-  </main>
+  </div>
 </Base>
