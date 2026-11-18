@@ -1,0 +1,39 @@
+---
+interface Props {
+  title: string;
+  blurb: string;
+  date: string;
+  stack: string[];
+  role: string;
+  status: string;
+  href?: string;
+  tilt?: 'left' | 'right' | 'none';
+}
+
+const { title, blurb, date, stack, role, status, href, tilt = 'none' } = Astro.props;
+
+const tiltClass = {
+  left: 'motion-safe:-rotate-[var(--tilt)]',
+  right: 'motion-safe:rotate-[var(--tilt)]',
+  none: '',
+}[tilt];
+---
+
+<article
+  class={`group relative flex flex-col gap-3 rounded-card border-2 border-line bg-surface p-5 shadow-cut transition-[rotate,translate,box-shadow] duration-300 ease-spring hover:-translate-y-1 hover:shadow-cut-lg motion-safe:hover:rotate-0 motion-safe:focus-within:rotate-0 ${tiltClass}`}
+>
+  <header class="flex items-center justify-between gap-3">
+    <span class="label">{date}</span>
+    <span class="label rounded-sticker bg-accent px-2 py-0.5 text-on-accent">{status}</span>
+  </header>
+  <h3 class="text-h3">
+    {href ? <a href={href} class="text-strong no-underline after:absolute after:inset-0">{title}</a> : title}
+  </h3>
+  <p class="text-small">{blurb}</p>
+  <dl class="mt-auto grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 border-t-2 border-dashed border-line pt-3 font-mono text-mono">
+    <dt class="label self-center">stack</dt>
+    <dd>{stack.join(' · ')}</dd>
+    <dt class="label self-center">role</dt>
+    <dd>{role}</dd>
+  </dl>
+</article>
