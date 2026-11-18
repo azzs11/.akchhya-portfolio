@@ -1,0 +1,21 @@
+---
+import { contact } from '../data/rooms';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t-2 border-line">
+  <div class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 sm:flex-row sm:items-end sm:justify-between sm:px-8">
+    <div class="flex flex-col gap-1">
+      <p class="label">say hi</p>
+      <a href={`mailto:${contact.email}`} class="font-display text-h2 font-bold text-strong">{contact.email}</a>
+    </div>
+    <div class="flex flex-col gap-3 sm:items-end">
+      <ul class="flex gap-4 text-small">
+        <li><a href={contact.github} rel="me">github</a></li>
+        <li><a href={contact.medium} rel="me">medium</a></li>
+      </ul>
+      <p class="label">© {year} akchhya singh</p>
+    </div>
+  </div>
+</footer>
