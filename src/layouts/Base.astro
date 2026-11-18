@@ -49,8 +49,11 @@ const { title, description, room, noindex = false } = Astro.props;
         if (roomKeys.includes(last)) d.dataset.room = last;
       }
 
+      // compare against the page's real room, not a hover preview from the character select
       addEventListener('pageswap', (e) => {
-        if (e.viewTransition) write(sessionStorage, 'vt-room', d.dataset.room || '');
+        if (!e.viewTransition) return;
+        const from = 'previewFrom' in d.dataset ? d.dataset.previewFrom : d.dataset.room || '';
+        write(sessionStorage, 'vt-room', from);
       });
       addEventListener('pagereveal', (e) => {
         if (!e.viewTransition) return;
