@@ -51,6 +51,53 @@
   }
 }
 
+/*
+  page transitions: native cross-document view transitions, no router JS.
+  same room = the browser's default crossfade. room change = a color wipe
+  (the 'wipe' type is added by the inline script in Base.astro).
+*/
+@view-transition {
+  navigation: auto;
+}
+
+.site-header {
+  view-transition-name: site-header;
+}
+
+html:active-view-transition-type(wipe)::view-transition-old(root) {
+  animation: none;
+}
+
+html:active-view-transition-type(wipe)::view-transition-new(root) {
+  animation: room-wipe var(--duration-slow) cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes room-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+.rooms-menu[open] {
+  animation: menu-rise var(--duration-base) var(--ease-spring);
+}
+
+@keyframes menu-rise {
+  from { translate: 0 1.5rem; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* cmdk group titles */
+[cmdk-group-heading] {
+  @apply label px-3 pt-3 pb-1 opacity-70;
+}
+
 /* mono uppercase metadata labels: dates, stack, status */
 @utility label {
   font-family: var(--font-mono);
