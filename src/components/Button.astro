@@ -1,11 +1,14 @@
 ---
-interface Props {
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends Omit<HTMLAttributes<'button'>, 'type'> {
   variant?: 'primary' | 'accent' | 'ghost';
   href?: string;
   type?: 'button' | 'submit';
 }
 
-const { variant = 'primary', href, type = 'button' } = Astro.props;
+// extra attributes (data-*, aria-*, hidden…) pass straight through
+const { variant = 'primary', href, type = 'button', class: extra, ...rest } = Astro.props;
 
 const base =
   'inline-flex items-center gap-2 rounded-card border-2 border-line px-5 py-2.5 font-sans font-semibold text-small no-underline ' +
@@ -18,13 +21,13 @@ const variants = {
   ghost: 'bg-transparent text-text hover:shadow-cut',
 };
 
-const cls = `${base} ${variants[variant]}`;
+const cls = [base, variants[variant], extra].filter(Boolean).join(' ');
 ---
 
 {
   href ? (
-    <a href={href} class={cls}><slot /></a>
+    <a href={href} class={cls} {...rest}><slot /></a>
   ) : (
-    <button type={type} class={cls}><slot /></button>
+    <button type={type} class={cls} {...rest}><slot /></button>
   )
 }
