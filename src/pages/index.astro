@@ -1,25 +1,16 @@
 ---
-// Temporary home: the character select arrives in phase 4.
 import Base from '../layouts/Base.astro';
-import { rooms } from '../data/rooms';
+import Hero from '../components/Hero.astro';
+import CharacterSelect from '../components/CharacterSelect.astro';
+import ProofStrip from '../components/ProofStrip.astro';
+import SayHi from '../components/SayHi.astro';
 ---
 
 <Base title="akchhya singh" description="Researcher, builder, marketer, reader. Pick a version.">
-  <section class="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-16 sm:px-8">
-    <h1 class="text-display">hi, i’m akchhya. pick a version.</h1>
-    <ul class="flex flex-wrap gap-3">
-      {
-        rooms.map((r) => (
-          <li data-room={r.key}>
-            <a
-              href={r.href}
-              class="inline-block rounded-card border-2 border-line bg-accent px-4 py-2 font-semibold text-on-accent no-underline shadow-cut"
-            >
-              {r.name}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-  </section>
+  <div class="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-14 sm:gap-20 sm:px-8 sm:py-20">
+    <Hero />
+    <CharacterSelect />
+    <ProofStrip />
+    <SayHi />
+  </div>
 </Base>
