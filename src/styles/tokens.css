@@ -1,0 +1,121 @@
+/*
+  Design tokens.
+
+  Three layers:
+  1. @theme         raw values, each becomes a Tailwind utility (bg-lime, font-display, text-h1…)
+  2. @theme inline  semantic names that point at runtime vars, so rooms and night mode can swap them
+  3. selectors      [data-theme] and [data-room] set those runtime vars, on <html> or any element
+
+  Contrast rule: room accents fail as text on paper (1.1 to 2.5:1). They are fills only,
+  always with --on-accent (ink) text on top (6.5 to 14.8:1).
+*/
+
+@theme {
+  /* palette */
+  --color-paper: #fbf0e8;
+  --color-ink: #1e0a2e;
+  --color-plum: #4a1468;
+  --color-lilac: #c9b6ff;
+  --color-lime: #d4f36b;
+  --color-tangerine: #ff6b2c;
+  --color-sky: #9fd3ff;
+  --color-bubblegum: #ff9ecf;
+
+  /* families */
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", monospace;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+
+  /*
+    type scale, fluid from 375px to 1440px viewports
+    display/h1 = loud poster sizes, h2/h3 = calmer notebook sizes.
+    display leading is 0.95, not 0.88: at 0.88 Bricolage descenders (0.208em)
+    collide with the next line's ascenders (0.721em). 0.95 keeps lines apart.
+  */
+  --text-display: clamp(3.5rem, 1.563rem + 8.263vw, 9rem); /* 56 → 144 */
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.04em;
+  --text-display--font-weight: 800;
+
+  --text-h1: clamp(2.5rem, 1.796rem + 3.005vw, 4.5rem); /* 40 → 72 */
+  --text-h1--line-height: 0.95;
+  --text-h1--letter-spacing: -0.03em;
+  --text-h1--font-weight: 800;
+
+  --text-h2: clamp(1.625rem, 1.405rem + 0.939vw, 2.25rem); /* 26 → 36 */
+  --text-h2--line-height: 1.1;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h2--font-weight: 700;
+
+  --text-h3: clamp(1.25rem, 1.162rem + 0.376vw, 1.5rem); /* 20 → 24 */
+  --text-h3--line-height: 1.25;
+  --text-h3--font-weight: 600;
+
+  --text-body: clamp(1.0625rem, 1.04rem + 0.094vw, 1.125rem); /* 17 → 18 */
+  --text-body--line-height: 1.6;
+
+  --text-small: 0.9375rem; /* 15 */
+  --text-small--line-height: 1.5;
+
+  --text-mono: 0.875rem; /* 14 */
+  --text-mono--line-height: 1.5;
+
+  --text-label: 0.75rem; /* 12, mono uppercase labels */
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.06em;
+
+  /* shape */
+  --radius-card: 8px;
+  --radius-sticker: 4px;
+
+  /* motion */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-strong: var(--strong);
+  --color-link: var(--link);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+
+  /* hard offset shadows follow the line color, so they still show at night */
+  --shadow-cut: 4px 4px 0 var(--line);
+  --shadow-cut-lg: 6px 6px 0 var(--line);
+}
+
+:root,
+[data-theme="light"] {
+  --surface: var(--color-paper);
+  --text: var(--color-ink);
+  --strong: var(--color-plum); /* headings, primary buttons: 11.8:1 on paper */
+  --link: var(--color-plum);
+  --line: var(--color-ink);
+}
+
+:root {
+  --accent: var(--color-lilac); /* default before a room is picked */
+  --on-accent: var(--color-ink); /* never changes: ink passes on every accent */
+
+  --duration-quick: 200ms;
+  --duration-base: 300ms;
+  --duration-slow: 400ms;
+  --tilt: 1.5deg;
+}
+
+[data-theme="night"] {
+  --surface: var(--color-ink);
+  --text: var(--color-paper);
+  --strong: var(--color-paper); /* plum on ink is 1.4:1, so headings go paper */
+  --link: var(--color-lilac); /* 10.2:1 on ink */
+  --line: var(--color-paper);
+}
+
+[data-room="researcher"] { --accent: var(--color-lilac); }
+[data-room="technobrat"] { --accent: var(--color-lime); }
+[data-room="marketer"] { --accent: var(--color-tangerine); }
+[data-room="caterpillar"] { --accent: var(--color-sky); }
+[data-room="organiser"] { --accent: var(--color-bubblegum); }
