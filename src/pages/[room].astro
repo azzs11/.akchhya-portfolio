@@ -1,0 +1,23 @@
+---
+// Placeholder for each room until its real page lands (phases 5 and 7).
+// A static file like src/pages/research.astro takes priority over this one.
+import Base from '../layouts/Base.astro';
+import { rooms, type Room } from '../data/rooms';
+
+export function getStaticPaths() {
+  return rooms.map((room) => ({ params: { room: room.href.slice(1) }, props: { room } }));
+}
+
+const { room } = Astro.props as { room: Room };
+---
+
+<Base title={`${room.label} · akchhya`} description={room.intro} room={room.key}>
+  <section class="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-16 sm:px-8">
+    <p>
+      <span class="label rounded-sticker border-2 border-line bg-accent px-2 py-0.5 text-on-accent">{room.name}</span>
+    </p>
+    <h1 class="text-h1">{room.label}</h1>
+    <p class="max-w-prose">{room.intro}</p>
+    <p class="text-small opacity-80">this room is still being furnished.</p>
+  </section>
+</Base>
