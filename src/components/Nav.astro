@@ -1,0 +1,133 @@
+---
+import { rooms, roomForPath } from '../data/rooms';
+
+const current = roomForPath(Astro.url.pathname);
+const iconBtn =
+  'inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-card border-2 border-line px-2.5 text-text ' +
+  'transition-[translate,box-shadow] duration-200 ease-spring hover:-translate-y-0.5 hover:shadow-cut';
+---
+
+<header class="site-header sticky top-0 z-40 border-b-2 border-line bg-surface">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-8">
+    <a href="/" class="font-display text-h3 font-extrabold tracking-tight text-strong no-underline">akchhya</a>
+
+    <nav aria-label="rooms" class="hidden lg:block">
+      <ul class="flex items-center gap-1">
+        {
+          rooms.map((r) => (
+            <li>
+              <a
+                href={r.href}
+                title={r.name}
+                data-room={r.key}
+                aria-current={current?.key === r.key ? 'page' : undefined}
+                class="block rounded-sticker px-2.5 py-1.5 text-small font-medium text-text no-underline transition-colors duration-200 hover:bg-accent hover:text-on-accent aria-[current=page]:bg-accent aria-[current=page]:text-on-accent"
+              >
+                {r.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <button type="button" class={iconBtn} data-theme-toggle aria-pressed="false" aria-label="night mode">
+        <svg class="in-data-[theme=night]:hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"></path>
+        </svg>
+        <svg class="hidden in-data-[theme=night]:block" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+        </svg>
+      </button>
+
+      <button type="button" class={iconBtn} data-palette-open aria-label="open command palette" aria-keyshortcuts="Control+K Meta+K">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <kbd class="label hidden sm:inline" data-kbd>ctrl k</kbd>
+      </button>
+
+      <button
+        type="button"
+        class={`${iconBtn} bg-accent font-semibold text-small text-on-accent lg:hidden`}
+        data-rooms-open
+        aria-haspopup="dialog"
+        aria-controls="rooms-menu"
+      >
+        rooms
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog
+  id="rooms-menu"
+  aria-labelledby="rooms-menu-title"
+  class="rooms-menu m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto bg-surface p-0 text-text backdrop:bg-ink/60"
+>
+  <div class="mx-auto flex max-w-xl flex-col gap-6 px-4 py-6">
+    <div class="flex items-center justify-between">
+      <h2 id="rooms-menu-title" class="text-h2">which akchhya?</h2>
+      <form method="dialog">
+        <button class={iconBtn} aria-label="close menu">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </form>
+    </div>
+    <ul class="flex flex-col gap-4">
+      {
+        rooms.map((r) => (
+          <li data-room={r.key}>
+            <a
+              href={r.href}
+              aria-current={current?.key === r.key ? 'page' : undefined}
+              class="flex flex-col gap-1 rounded-card border-2 border-line bg-accent p-4 text-on-accent no-underline shadow-cut transition-[translate,box-shadow] duration-200 ease-spring active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+            >
+              <span class="font-display text-h3">{r.name}</span>
+              <span class="label">{r.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <a href="/" class="label self-start">← home</a>
+  </div>
+</dialog>
+
+<script>
+  import { getTheme, toggleTheme } from '../scripts/theme';
+
+  // night toggle
+  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const sync = () => toggle?.setAttribute('aria-pressed', String(getTheme() === 'night'));
+  sync();
+  document.addEventListener('themechange', sync);
+  toggle?.addEventListener('click', toggleTheme);
+
+  // mobile room menu
+  const menu = document.getElementById('rooms-menu') as HTMLDialogElement | null;
+  document.querySelector('[data-rooms-open]')?.addEventListener('click', () => menu?.showModal());
+
+  // command palette: React + cmdk load only on first use
+  let palette: Promise<typeof import('../scripts/palette')> | undefined;
+  const load = () => (palette ??= import('../scripts/palette'));
+
+  document.querySelectorAll('[data-palette-open]').forEach((btn) =>
+    btn.addEventListener('click', async () => (await load()).openPalette()),
+  );
+  addEventListener('keydown', async (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      (await load()).openPalette('toggle');
+    }
+  });
+
+  if (/Mac|iPhone|iPad/.test(navigator.userAgent)) {
+    document.querySelectorAll('[data-kbd]').forEach((k) => (k.textContent = '⌘K'));
+  }
+</script>
