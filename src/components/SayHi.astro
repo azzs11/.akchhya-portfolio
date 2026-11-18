@@ -1,0 +1,44 @@
+---
+import Button from './Button.astro';
+import { contact } from '../data/rooms';
+---
+
+<section aria-labelledby="say-hi" class="flex flex-col gap-5 rounded-card border-2 border-line p-6 shadow-cut sm:p-10">
+  <h2 id="say-hi" class="text-h1">say hi</h2>
+  <p class="max-w-2xl">
+    open to software engineering and applied AI roles (remote or bangalore), and research collaborations.
+  </p>
+  <div class="flex flex-wrap items-center gap-4">
+    <!-- shown by the script, so no-JS visitors only see the mailto link -->
+    <Button variant="accent" data-copy-email={contact.email} hidden>copy email</Button>
+    <a href={`mailto:${contact.email}`} class="font-mono text-mono">{contact.email}</a>
+    <span class="sr-only" aria-live="polite" data-copy-status></span>
+  </div>
+</section>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('[data-copy-email]');
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+
+  if (btn && navigator.clipboard) {
+    btn.hidden = false;
+    const label = btn.textContent;
+    let timer: number | undefined;
+
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copyEmail!);
+        btn.textContent = 'copied!';
+        if (status) status.textContent = 'email copied to clipboard';
+      } catch {
+        window.location.href = `mailto:${btn.dataset.copyEmail}`;
+        return;
+      }
+      clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        btn.textContent = label;
+        if (status) status.textContent = '';
+      }, 1600);
+    });
+  }
+</script>
