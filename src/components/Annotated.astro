@@ -1,0 +1,98 @@
+---
+/*
+  a block of writing with notes in the margin, the way a careful reader
+  annotates a paper. wide: the notes sit in a mono column to the right,
+  joined to the text by a short dotted tick. narrow: they fold in under the
+  text behind a hairline. plain css, no js.
+
+  <Annotated>
+    <p>the main text…</p>
+    <Fragment slot="note">
+      <p>dsce, bengaluru</p>
+      <p>↳ itihasa</p>
+    </Fragment>
+  </Annotated>
+*/
+interface Props {
+  /** element for the wrapper: a section when the block has its own heading */
+  as?: 'div' | 'section' | 'article';
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { as: Tag = 'div', class: extra, ...rest } = Astro.props;
+const hasNote = Astro.slots.has('note');
+---
+
+<Tag class:list={['annotated', extra]} {...rest}>
+  <div class="annotated-grid">
+    <div class="annotated-main">
+      <slot />
+    </div>
+    {
+      hasNote && (
+        <div class="annotated-note">
+          <slot name="note" />
+        </div>
+      )
+    }
+  </div>
+</Tag>
+
+<style>
+  /* the outer element is the container, the inner one is the grid */
+  .annotated {
+    container-type: inline-size;
+  }
+
+  .annotated-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .annotated-main {
+    min-width: 0;
+  }
+
+  /* narrow: notes fold in under the text */
+  .annotated-note {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-left: 0.85rem;
+    border-left: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    line-height: 1.5;
+    text-transform: lowercase;
+  }
+
+  /* wide: a margin column, pinned to the top of the block */
+  @container (min-width: 44rem) {
+    .annotated-grid {
+      grid-template-columns: minmax(0, 1fr) 15rem;
+      column-gap: 3.5rem;
+      align-items: start;
+    }
+
+    .annotated-note {
+      position: relative;
+      padding-top: 0.35rem;
+    }
+
+    /* the dotted tick that ties the note to its text */
+    .annotated-note::before {
+      content: "";
+      position: absolute;
+      top: 1.05rem;
+      left: calc(-3.5rem + 0.75rem);
+      width: calc(3.5rem - 1.5rem);
+      border-top: 1px dotted var(--line);
+      opacity: 0.6;
+    }
+  }
+
+  .annotated-note :global(a) {
+    color: var(--link);
+  }
+</style>

@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import { rooms } from '../data/rooms';
 import Button from '../components/Button.astro';
 import CatalogueCard from '../components/CatalogueCard.astro';
+import Annotated from '../components/Annotated.astro';
 
 const palette = [
   { name: 'paper', hex: '#FBF0E8', role: 'canvas', note: 'ink on it 16.5:1', cls: 'bg-paper text-ink' },
@@ -97,6 +98,20 @@ const themes = ['light', 'night'] as const;
           <figcaption class="label">mask-line, safe</figcaption>
         </figure>
       </div>
+    </section>
+
+    <section aria-labelledby="notes" class="flex flex-col gap-6">
+      <h2 id="notes" class="text-h2">margin notes</h2>
+      <p class="max-w-prose text-small">Annotated.astro: notes sit in a mono margin column on wide screens and fold in under the text on narrow ones.</p>
+      <Annotated>
+        <h3 class="text-h3">q. which matches need a person?</h3>
+        <p class="mt-2 max-w-prose">Treat expert time as a fixed budget: the system asks which matches only a person can settle and routes just those to a volunteer or expert.</p>
+        <Fragment slot="note">
+          <p>status: ongoing</p>
+          <p>independent · dsce, bengaluru</p>
+          <p>↳ <a href="/build">itihasa</a></p>
+        </Fragment>
+      </Annotated>
     </section>
 
     <section aria-labelledby="links" class="flex flex-col gap-6">
