@@ -108,6 +108,82 @@ html:active-view-transition-type(wipe)::view-transition-new(root) {
 }
 
 /*
+  paper grain
+  one fixed layer over everything: the line color, cut through an SVG noise
+  mask. it follows night mode on its own (line is paper at night) and never
+  takes clicks. strength is --grain: medium everywhere, loud in the
+  caterpillar and organiser rooms. the noise is static, so nothing moves and
+  reduced motion has nothing to switch off.
+*/
+:root {
+  --grain: 0.11;
+  --grain-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.2 0 0 0 -1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+[data-theme="night"] { --grain: 0.07; }
+[data-room="caterpillar"],
+[data-room="organiser"] { --grain: 0.18; }
+[data-theme="night"][data-room="caterpillar"],
+[data-theme="night"][data-room="organiser"] { --grain: 0.11; }
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background-color: var(--line);
+  mask: var(--grain-noise) repeat 0 0 / 220px 220px;
+  opacity: var(--grain);
+  transition: opacity var(--duration-base) ease;
+}
+
+@media print, (forced-colors: active) {
+  body::after { display: none; }
+}
+
+/*
+  print marks
+  crop marks sit just outside the corners of the content column, the way a
+  printer marks where to trim. decorative only (aria-hidden in Base.astro),
+  hidden on phones where the gutter is too narrow for them.
+*/
+.crop {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0.55;
+}
+
+.crop::before,
+.crop::after {
+  content: "";
+  position: absolute;
+  background-color: var(--line);
+}
+
+/* drawn for the top-left corner, then mirrored for the others */
+.crop::before { width: 14px; height: 1px; top: 0; right: 6px; }
+.crop::after { width: 1px; height: 14px; left: 0; bottom: 6px; }
+.crop-tr { scale: -1 1; }
+.crop-bl { scale: 1 -1; }
+.crop-br { scale: -1 -1; }
+
+/*
+  the box rule
+  - a 2px ink edge means "this is a piece of paper": cards, stickers, swatches.
+  - the hard offset shadow means "you can press or pick this up". it only goes
+    on things you can click or drag, never on sections or plain content.
+  - everything else is type sitting straight on the page, no box.
+  `paper` is the clickable version: edge + corners + shadow in one place.
+*/
+@utility paper {
+  border: 2px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: 4px 4px 0 var(--line);
+}
+
+/*
   wrapper for masked text reveals (overflow: hidden).
   display/h1 lines are shorter than Bricolage's descenders, so pad the
   bottom by the descender depth and pull it back so layout doesn't move.

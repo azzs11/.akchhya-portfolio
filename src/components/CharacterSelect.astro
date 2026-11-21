@@ -1,61 +1,317 @@
 ---
+/*
+  character select, as an editorial index.
+  five rooms as huge stacked names, like the contents page of a magazine.
+  hover or focus a row: the page previews that room's accent, the other rows
+  step back, and (mouse only) a small paper card follows the cursor showing
+  a piece of the room. the card is decoration: everything it says is also in
+  the row, so touch, keyboard and no-JS visitors miss nothing.
+*/
 import { rooms } from '../data/rooms';
+
+// small tilt per card so they don't look stamped out of one mould
+const tilt: Record<string, string> = {
+  technobrat: '-3deg',
+  researcher: '2deg',
+  product: '-1.5deg',
+  caterpillar: '3deg',
+  organiser: '-2deg',
+};
 ---
 
 <section aria-labelledby="pick-title">
   <h2 id="pick-title" class="sr-only">pick a room</h2>
-  <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5" data-character-select>
+
+  <ol class="index border-t border-line" data-character-select>
     {
-      rooms.map((r, i) => (
-        <li
-          data-room={r.key}
-          class={`transition-[rotate] duration-300 ease-spring motion-safe:focus-within:rotate-0 motion-safe:hover:rotate-0 ${
-            i % 2 ? 'motion-safe:rotate-[var(--tilt)]' : 'motion-safe:-rotate-[var(--tilt)]'
-          }`}
-        >
-          <a
-            href={r.href}
-            data-preview={r.key}
-            class="room-card flex h-full flex-col gap-3 rounded-card border-2 border-line bg-surface p-5 text-text no-underline shadow-cut hover:bg-accent hover:text-on-accent hover:shadow-cut-lg focus-visible:bg-accent focus-visible:text-on-accent"
-          >
-            <span class="h-3 w-12 rounded-full border-2 border-line bg-accent" aria-hidden="true" />
-            <span class="font-display text-h3 font-extrabold">{r.name}</span>
-            <span class="label">{r.label}</span>
-            <span class="text-small">{r.intro}</span>
-            <span class="label mt-auto pt-2" aria-hidden="true">enter →</span>
-          </a>
-        </li>
-      ))
+      rooms.map((r, i) => {
+        const [first, ...rest] = r.name.split(' ');
+        return (
+          <li data-room={r.key} class="border-b border-line">
+            <a href={r.href} data-preview={r.key} class="row group">
+              <span class="row-num label" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span class="row-name">
+                {first === 'the' ? (
+                  <>
+                    <span class="row-the">the</span> {rest.join(' ')}
+                  </>
+                ) : (
+                  r.name
+                )}
+              </span>
+              <span class="row-meta">
+                <span class="label">{r.label}</span>
+                <span class="text-small">{r.intro}</span>
+              </span>
+              <span class="row-arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        );
+      })
     }
-  </ul>
+  </ol>
+
+  <!-- the card that follows the cursor: one face per room, decorative -->
+  <div class="follow" data-follow aria-hidden="true">
+    <div class="follow-inner" data-follow-inner>
+      <div class="face" data-face="technobrat" data-room="technobrat" style={`--face-tilt:${tilt.technobrat}`}>
+        <p class="label opacity-70">~/build</p>
+        <p class="font-mono text-mono leading-relaxed">
+          <span class="opacity-60">$</span> ls<br />
+          itihasa&nbsp;&nbsp;rate-limiter<br />
+          chronolog&nbsp;&nbsp;sprout
+        </p>
+        <p class="font-mono text-mono"><span class="bg-accent px-1 text-on-accent">140K req/s</span></p>
+      </div>
+
+      <div class="face" data-face="researcher" data-room="researcher" style={`--face-tilt:${tilt.researcher}`}>
+        <p class="label opacity-70">index card · q.</p>
+        <p class="font-display text-h3 leading-tight">when are two messy records the same thing?</p>
+        <p class="font-mono text-label opacity-80">→ graph-based entity resolution</p>
+      </div>
+
+      <div class="face" data-face="product" data-room="product" style={`--face-tilt:${tilt.product}`}>
+        <p class="sticker">1.8M</p>
+        <p class="label">launch impressions<br />libra ai</p>
+      </div>
+
+      <div class="face face-polaroid" data-face="caterpillar" data-room="caterpillar" style={`--face-tilt:${tilt.caterpillar}`}>
+        <div class="polaroid-photo">
+          <svg viewBox="0 0 120 60" width="100%" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <circle cx="22" cy="38" r="9"></circle>
+            <circle cx="40" cy="34" r="10"></circle>
+            <circle cx="59" cy="36" r="10"></circle>
+            <circle cx="78" cy="31" r="10"></circle>
+            <circle cx="97" cy="26" r="11"></circle>
+            <path d="M93 15l-3-7M102 15l3-7"></path>
+            <circle cx="95" cy="25" r="1" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <p class="font-serif text-h3 leading-tight italic">the part of me that isn’t optimising anything.</p>
+      </div>
+
+      <div class="face" data-face="organiser" data-room="organiser" style={`--face-tilt:${tilt.organiser}`}>
+        <p class="label border-b border-dashed border-line pb-1">newsletter · oscode · club</p>
+        <p class="font-display text-h2 leading-none font-extrabold">40 people, one room, on time.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <style>
-  .room-card {
-    transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  /* ── rows ─────────────────────────────────────────── */
+  .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.5rem 1fr auto;
+    grid-template-areas:
+      "num name arrow"
+      ".   meta meta";
+    align-items: baseline;
+    column-gap: 0.75rem;
+    row-gap: 0.5rem;
+    padding-block: 1.25rem;
+    color: var(--text);
+    text-decoration: none;
+    isolation: isolate;
+    transition: opacity var(--duration-base) ease;
+  }
+
+  @media (min-width: 64rem) {
+    .row {
+      grid-template-columns: 3.5rem 1fr 17rem 2rem;
+      grid-template-areas: "num name meta arrow";
+      column-gap: 1.5rem;
+      padding-block: 1.1rem;
+    }
+  }
+
+  /* accent sweeps in from the left behind the row */
+  .row::before {
+    content: "";
+    position: absolute;
+    inset: 0 -0.75rem;
+    z-index: -1;
+    background-color: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-slow) cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .row:hover::before,
+  .row:focus-visible::before {
+    transform: scaleX(1);
+  }
+
+  .row:hover,
+  .row:focus-visible {
+    color: var(--on-accent);
+  }
+
+  /* the other rows step back while one is picked */
+  .index:has(.row:hover) .row:not(:hover),
+  .index:has(.row:focus-visible) .row:not(:focus-visible) {
+    opacity: 0.35;
+  }
+
+  .row-num {
+    grid-area: num;
+  }
+
+  .row-name {
+    grid-area: name;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.5rem, 1.25rem + 5.2vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--strong);
     transition:
-      transform var(--duration-slow) var(--ease-spring),
-      box-shadow var(--duration-quick) ease,
-      background-color var(--duration-quick) ease,
+      translate var(--duration-slow) var(--ease-spring),
       color var(--duration-quick) ease;
   }
 
-  /* follow the cursor closely while tilting, spring back on leave */
-  .room-card[data-tilting] {
-    transition-duration: 80ms, var(--duration-quick), var(--duration-quick), var(--duration-quick);
+  .row:hover .row-name,
+  .row:focus-visible .row-name {
+    color: var(--on-accent);
+    translate: 0.75rem 0;
+  }
+
+  /* "the" set small in the serif, like a magazine contents page */
+  .row-the {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.5em;
+    letter-spacing: 0;
+    vertical-align: 0.6em;
+  }
+
+  .row-meta {
+    grid-area: meta;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-width: 34rem;
+  }
+
+  .row-arrow {
+    grid-area: arrow;
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 800;
+    transition: translate var(--duration-slow) var(--ease-spring);
+  }
+
+  .row:hover .row-arrow,
+  .row:focus-visible .row-arrow {
+    translate: 0.4rem 0;
+  }
+
+  /* outline the accent band, which bleeds past the column, not the row */
+  .row:focus-visible {
+    outline: none;
+  }
+
+  .row:focus-visible::before {
+    outline: 3px solid var(--line);
+  }
+
+  /* ── follow card ──────────────────────────────────── */
+  .follow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 30;
+    width: 15rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--duration-quick) ease;
+    will-change: transform;
+  }
+
+  .follow[data-on] {
+    opacity: 1;
+  }
+
+  .face {
+    display: none;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.1rem;
+    background-color: var(--surface);
+    color: var(--text);
+    border: 2px solid var(--line); /* paper, but not clickable: edge, no shadow */
+    border-radius: var(--radius-card);
+    rotate: var(--face-tilt);
+    position: relative;
+  }
+
+  .face[data-show] {
+    display: flex;
+  }
+
+  /* a strip of tape holding the card down */
+  .face::before {
+    content: "";
+    position: absolute;
+    top: -0.7rem;
+    left: 50%;
+    width: 4.5rem;
+    height: 1.3rem;
+    translate: -50% 0;
+    rotate: -4deg;
+    background-color: color-mix(in oklab, var(--accent) 70%, transparent);
+    border-inline: 1px dashed color-mix(in oklab, var(--line) 25%, transparent);
+  }
+
+  .sticker {
+    align-self: flex-start;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 3.5rem;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    padding: 0.2rem 0.6rem 0.35rem;
+    background-color: var(--accent);
+    color: var(--on-accent);
+    border-radius: 999px;
+    outline: 3px solid var(--surface); /* die-cut white edge */
+    box-shadow: 0 0 0 5px var(--line);
+    rotate: -4deg;
+  }
+
+  .face-polaroid {
+    padding-bottom: 1.5rem;
+  }
+
+  .polaroid-photo {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    padding: 1rem;
+    background-color: var(--accent);
+    color: var(--on-accent);
   }
 </style>
 
 <script>
-  // Hover or focus a card: the whole page previews that room's accent.
-  // Mouse only: the card tilts toward the cursor.
+  // Hover or focus a row: the whole page previews that room's accent.
+  // Mouse: a card follows the cursor with a little swing. Keyboard and
+  // reduced motion: the card sits still beside the focused row.
   const list = document.querySelector<HTMLElement>('[data-character-select]');
+  const follow = document.querySelector<HTMLElement>('[data-follow]');
+  const inner = document.querySelector<HTMLElement>('[data-follow-inner]');
 
-  if (list) {
+  if (list && follow && inner) {
     const html = document.documentElement;
     const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-    const MAX_TILT = 10; // degrees
+    const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+    const faces = inner.querySelectorAll<HTMLElement>('[data-face]');
 
+    // ── page accent preview ──
     const preview = (room: string) => {
       if (!('previewFrom' in html.dataset)) html.dataset.previewFrom = html.dataset.room ?? '';
       html.dataset.room = room;
@@ -69,35 +325,121 @@ import { rooms } from '../data/rooms';
       delete html.dataset.previewFrom;
     };
 
-    list.querySelectorAll<HTMLAnchorElement>('a[data-preview]').forEach((card) => {
-      const room = card.dataset.preview!;
+    // ── follow card ──
+    let shown = '';
+    let x = 0, y = 0, tx = 0, ty = 0, swing = 0;
+    let frame = 0;
 
-      card.addEventListener('pointerenter', () => preview(room));
-      card.addEventListener('focus', () => preview(room));
+    const place = () => {
+      follow.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${swing}deg)`;
+    };
 
-      card.addEventListener('pointermove', (e) => {
-        if (e.pointerType !== 'mouse' || reduce.matches) return;
-        const box = card.getBoundingClientRect();
-        const x = (e.clientX - box.left) / box.width - 0.5;
-        const y = (e.clientY - box.top) / box.height - 0.5;
-        card.style.setProperty('--ry', `${x * MAX_TILT}deg`);
-        card.style.setProperty('--rx', `${-y * MAX_TILT}deg`);
-        card.dataset.tilting = '';
+    const show = (room: string) => {
+      if (shown === room) return;
+      shown = room;
+      faces.forEach((f) => f.toggleAttribute('data-show', f.dataset.face === room));
+      follow.dataset.on = '';
+      if (!reduce.matches) {
+        inner.animate(
+          [{ transform: 'scale(0.85) rotate(-6deg)' }, { transform: 'scale(1) rotate(0)' }],
+          { duration: 350, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)' },
+        );
+      }
+    };
+
+    const hide = () => {
+      shown = '';
+      delete follow.dataset.on;
+    };
+
+    // keep the card inside the window
+    const clampTo = (px: number, py: number) => {
+      const w = follow.offsetWidth, h = follow.offsetHeight;
+      return [Math.min(Math.max(px, 12), innerWidth - w - 12), Math.min(Math.max(py, 12), innerHeight - h - 12)];
+    };
+
+    const tick = () => {
+      const dx = tx - x;
+      x += dx * 0.18;
+      y += (ty - y) * 0.18;
+      swing += (Math.max(-10, Math.min(10, dx * 0.15)) - swing) * 0.2; // lean into the motion
+      place();
+      frame = Math.abs(dx) + Math.abs(ty - y) + Math.abs(swing) > 0.1 ? requestAnimationFrame(tick) : 0;
+    };
+
+    const moveTo = (px: number, py: number, jump: boolean) => {
+      [tx, ty] = clampTo(px, py);
+      if (jump || reduce.matches) {
+        x = tx; y = ty; swing = 0;
+        place();
+      } else if (!frame) {
+        frame = requestAnimationFrame(tick);
+      }
+    };
+
+    // beside the row, for keyboard focus and reduced motion: just left of the
+    // label column, so it overlaps the end of the big name, never the text
+    const anchor = (row: HTMLElement) => {
+      const box = row.getBoundingClientRect();
+      const meta = row.querySelector('.row-meta')!.getBoundingClientRect();
+      const left = meta.left > box.left + box.width / 2 ? meta.left - follow.offsetWidth - 24 : box.right - follow.offsetWidth;
+      moveTo(left, box.top + box.height / 2 - follow.offsetHeight / 2, true);
+    };
+
+    list.querySelectorAll<HTMLAnchorElement>('a[data-preview]').forEach((row) => {
+      const room = row.dataset.preview!;
+
+      row.addEventListener('pointerenter', (e) => {
+        preview(room);
+        if (e.pointerType !== 'mouse' || !finePointer.matches) return;
+        const wasHidden = !shown;
+        show(room);
+        if (reduce.matches) anchor(row);
+        else moveTo(e.clientX + 28, e.clientY - follow.offsetHeight / 2, wasHidden);
       });
 
-      card.addEventListener('pointerleave', () => {
-        card.style.removeProperty('--rx');
-        card.style.removeProperty('--ry');
-        delete card.dataset.tilting;
+      row.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse' || reduce.matches || !shown) return;
+        moveTo(e.clientX + 28, e.clientY - follow.offsetHeight / 2, false);
+      });
+
+      row.addEventListener('focus', () => {
+        preview(room);
+        if (!row.matches(':focus-visible')) return;
+        show(room);
+        anchor(row);
       });
     });
 
-    list.addEventListener('pointerleave', restore);
+    list.addEventListener('pointerleave', () => {
+      restore();
+      hide();
+    });
+
     list.addEventListener('focusout', (e) => {
-      if (!list.contains(e.relatedTarget as Node | null)) restore();
+      if (list.contains(e.relatedTarget as Node | null)) return;
+      restore();
+      hide();
     });
+
+    // a scroll moves the rows out from under the card: follow the focused
+    // row (tabbing scrolls it into view), otherwise put the card away
+    addEventListener(
+      'scroll',
+      () => {
+        if (!shown || list.matches(':hover')) return;
+        const focused = list.querySelector<HTMLElement>('a:focus-visible');
+        if (focused) anchor(focused);
+        else hide();
+      },
+      { passive: true },
+    );
 
     // coming back via the back button shouldn't keep a stale preview
-    addEventListener('pageshow', (e) => e.persisted && restore());
+    addEventListener('pageshow', (e) => {
+      if (!e.persisted) return;
+      restore();
+      hide();
+    });
   }
 </script>

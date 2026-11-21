@@ -2,9 +2,11 @@
 import { rooms, roomForPath } from '../data/rooms';
 
 const current = roomForPath(Astro.url.pathname);
+// box rule: small controls are not paper, so no edge or shadow. they get an
+// accent fill on hover instead. the mobile "rooms" button is the one piece of paper.
 const iconBtn =
-  'inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-card border-2 border-line px-2.5 text-text ' +
-  'transition-[translate,box-shadow] duration-200 ease-spring hover:-translate-y-0.5 hover:shadow-cut';
+  'inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-full px-2.5 text-text ' +
+  'transition-colors duration-200 hover:bg-accent hover:text-on-accent';
 ---
 
 <header class="site-header sticky top-0 z-40 border-b-2 border-line bg-surface">
@@ -52,7 +54,7 @@ const iconBtn =
 
       <button
         type="button"
-        class={`${iconBtn} bg-accent font-semibold text-small text-on-accent lg:hidden`}
+        class="paper inline-flex h-10 items-center bg-accent px-3 text-small font-semibold text-on-accent transition-[translate,box-shadow] duration-200 ease-spring active:translate-x-0.5 active:translate-y-0.5 active:shadow-none lg:hidden"
         data-rooms-open
         aria-haspopup="dialog"
         aria-controls="rooms-menu"
@@ -86,7 +88,7 @@ const iconBtn =
             <a
               href={r.href}
               aria-current={current?.key === r.key ? 'page' : undefined}
-              class="flex flex-col gap-1 rounded-card border-2 border-line bg-accent p-4 text-on-accent no-underline shadow-cut transition-[translate,box-shadow] duration-200 ease-spring active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+              class="paper flex flex-col gap-1 bg-accent p-4 text-on-accent no-underline transition-[translate,box-shadow] duration-200 ease-spring active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
             >
               <span class="font-display text-h3">{r.name}</span>
               <span class="label">{r.label}</span>
