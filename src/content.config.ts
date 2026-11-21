@@ -1,4 +1,4 @@
-import { defineCollection } from 'astro:content';
+import { defineCollection, reference } from 'astro:content';
 import { file } from 'astro/loaders';
 import { z } from 'astro/zod';
 
@@ -27,4 +27,40 @@ const papers = defineCollection({
   }),
 });
 
-export const collections = { papers };
+/*
+  projects: the /build catalogue, in src/content/projects.yaml.
+  only facts I've confirmed go in. a field I haven't filled stays out, and the
+  page simply doesn't show it: no placeholder dates, statuses or numbers.
+*/
+const projects = defineCollection({
+  loader: file('src/content/projects.yaml'),
+  schema: z.object({
+    title: z.string(),
+    order: z.number(), // position on /build
+    summary: z.string(), // one line, sentence case
+    dates: z.string().optional(), // "nov 2026 – now"
+    role: z.string(),
+    status: z.string().optional(),
+    stack: z.array(z.string()), // as written: "PostgreSQL (pgvector)"
+    tags: z.array(z.string()), // normalised, for the stack filter: "postgres"
+    result: z
+      .object({
+        short: z.string(), // the ledger column: "−65% redis calls"
+        full: z.string(), // the sentence with its conditions
+        kind: z.enum(['performance', 'scale']).default('performance'),
+      })
+      .optional(),
+    links: z
+      .array(
+        z.object({
+          label: z.string(),
+          href: z.url(),
+          show: z.boolean().default(true), // false = stored, not shown (e.g. repo not pushed yet)
+        }),
+      )
+      .default([]),
+    paper: reference('papers').optional(),
+  }),
+});
+
+export const collections = { papers, projects };

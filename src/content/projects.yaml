@@ -1,0 +1,82 @@
+# the /build catalogue, in display order.
+# rule: only confirmed facts. leave a field out rather than guess.
+# still to fill: sprout (dates, status, link, result), email service (dates, status, link, result),
+# chronolog (exact libraries, months).
+
+- id: itihasa
+  title: Itihasa
+  order: 1
+  summary: An open platform that reads and links manuscripts photographed by families, routing each uncertain match to a volunteer or an expert within a fixed review budget.
+  dates: nov 2026 – now
+  role: sole creator
+  status: in active development
+  stack: [FastAPI, PostgreSQL (pgvector), CI, OAIS, BagIt]
+  tags: [python, postgres]
+  links:
+    # code not pushed as of 19 nov 2026. flip to true once it is.
+    - { label: github, href: "https://github.com/azzs11/Itihasa", show: false }
+
+- id: ratelab
+  title: Ratelab
+  order: 2
+  summary: A Rust rate-limiting library with five algorithms and five cluster coordination strategies, benchmarked against an exact oracle, including adaptive quota leasing, a protocol of my own.
+  dates: dec 2025 – nov 2026
+  role: sole developer
+  status: published library
+  stack: [Rust, Redis, Axum, WebAssembly]
+  tags: [rust, redis, wasm]
+  result:
+    short: −65% redis calls
+    full: 65% fewer Redis calls than exact central limiting, at 1.73% admission error on 3 nodes.
+  links:
+    - { label: github, href: "https://github.com/azzs11/distributed-rate-limiter" }
+    - { label: crates.io, href: "https://crates.io/crates/ratelab" }
+
+- id: chronolog
+  title: ChronoLog
+  order: 3
+  summary: Learned root-cause ranking for logs. RootRank names the faulty service from incident logs; it ships as an app, a REST API and a command-line tool.
+  dates: "2026"
+  role: sole developer
+  status: shipped, open source
+  stack: [Python, learning to rank]
+  tags: [python, ml]
+  result:
+    short: 52.6% top-3
+    full: The faulty service is in the top 3 for 52.6% of 359 real RCAEval incidents, against 26.5% for hand-written rules.
+  links:
+    - { label: github, href: "https://github.com/azzs11/chronolog" }
+
+- id: sprout
+  title: Sprout
+  order: 4
+  summary: Answers why a line of code exists from git history with cited commits, and warns people and AI coding agents before they undo a past fix. Available as a CLI and an MCP server.
+  role: sole developer
+  stack: [Python, MCP]
+  tags: [python, mcp]
+
+- id: email-service
+  title: Scalable email service
+  order: 5
+  summary: Durable, idempotent email delivery with an outbox, retries and provider failover, plus an Agent Send Guard that lets AI agents send mail only within set caps, to trusted recipients and with human approval.
+  role: sole developer
+  stack: [.NET 8, PostgreSQL]
+  tags: [.net, postgres]
+
+- id: heritagerec
+  title: HeritageRec
+  order: 6
+  summary: A knowledge-graph recommender that relates heritage documents sharing no vocabulary, explaining each recommendation through the entities they share.
+  dates: 2025 – 2026
+  role: team lead, team of four under prof. alka rani
+  status: paper published
+  stack: [Python, knowledge graph, SimRank, LambdaMART]
+  tags: [python, ml]
+  result:
+    short: 3,006-node graph
+    full: A knowledge graph of 3,006 nodes and 8,058 edges.
+    kind: scale
+  links:
+    - { label: github, href: "https://github.com/azzs11/Heritage_Doc_Recomm_Sys" }
+    - { label: paper, href: "https://doi.org/10.1109/ICICACS68679.2026.11578736" }
+  paper: rani2026heritage
