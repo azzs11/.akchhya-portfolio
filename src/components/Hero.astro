@@ -1,13 +1,188 @@
 ---
-// The highlight uses the page accent, so it follows the room being previewed below.
+/*
+  hero: a masthead line, a handwritten "hi", and the name set as a wordmark
+  that fills the column at every width (container query units, no JS).
+  the full stop is a disc of the page accent, so it changes with the room
+  being previewed in the index below.
+  signature slot: once a clean handwritten "akchhya" exists, it goes over the
+  bottom-right of the wordmark, tilted, in the accent.
+*/
+import Hi from '../assets/handwriting/hi.svg';
+import ArrowDown from '../assets/handwriting/arrow-down.svg';
+
+// build date, so the line is never a lie: "nov 2026"
+const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toLowerCase();
 ---
 
-<header class="flex flex-col gap-5">
-  <h1 class="text-display">
-    hi, i’m akchhya.<br />
-    pick a <mark class="rounded-sticker bg-accent px-[0.08em] text-on-accent transition-colors duration-300">version.</mark>
+<header class="hero">
+  <div class="masthead label">
+    <span>a portfolio, in five rooms</span>
+    <span>updated {updated}</span>
+  </div>
+
+  <h1 class="hero-title">
+    <span class="sr-only">hi, i’m akchhya.</span>
+    <span class="greeting" aria-hidden="true">
+      <Hi class="hand hand-hi" aria-hidden="true" />
+      <span>i’m</span>
+    </span>
+    <span class="wordmark" aria-hidden="true">akchhya<span class="dot"></span></span>
   </h1>
-  <p class="max-w-2xl font-display text-h3 font-semibold text-text">
-    researcher, builder, product nerd, reader. sometimes in the same hour.
-  </p>
+
+  <div class="hero-foot">
+    <p class="pick">
+      pick a version
+      <ArrowDown class="hand hand-arrow" aria-hidden="true" />
+    </p>
+    <p class="subline">researcher, builder, product nerd, reader. sometimes in the same hour.</p>
+  </div>
 </header>
+
+<style>
+  .hero {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .masthead {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    white-space: nowrap;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hero-title {
+    display: flex;
+    flex-direction: column;
+    margin-top: clamp(1.5rem, 4cqi, 3rem);
+    color: var(--strong);
+  }
+
+  /* the handwritten hi, with the rest of the line in the display face */
+  .greeting {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.35em;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1rem + 3cqi, 3.25rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: -0.1em;
+    padding-left: 0.1em;
+  }
+
+  .hand {
+    display: block;
+    width: auto;
+    color: var(--strong);
+  }
+
+  .hand-hi {
+    height: 2em;
+    rotate: -8deg;
+    margin-bottom: -0.15em;
+  }
+
+  /* sized so "akchhya." spans the column exactly */
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 24.8cqi;
+    line-height: 0.82;
+    letter-spacing: -0.055em;
+    margin-left: -0.045em; /* optical: pull the a's side bearing to the edge */
+    white-space: nowrap;
+  }
+
+  /* a real circle, not the font's squarish full stop */
+  .dot {
+    display: inline-block;
+    width: 0.17em;
+    height: 0.17em;
+    margin-left: 0.03em;
+    border-radius: 50%;
+    background-color: var(--accent);
+    border: max(2px, 0.018em) solid var(--line);
+    transition: background-color var(--duration-base) ease;
+  }
+
+  .hero-foot {
+    display: grid;
+    gap: 1.25rem;
+    margin-top: clamp(1.5rem, 4cqi, 3rem);
+  }
+
+  @container (min-width: 48rem) {
+    .hero-foot {
+      grid-template-columns: repeat(12, 1fr);
+      align-items: start;
+    }
+
+    .pick {
+      grid-column: 1 / span 4;
+    }
+
+    .subline {
+      grid-column: 7 / span 6;
+    }
+  }
+
+  .pick {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 700;
+    color: var(--strong);
+  }
+
+  .hand-arrow {
+    height: 4.5rem;
+    rotate: 6deg;
+    margin-top: 0.2rem;
+  }
+
+  .subline {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: 1.3;
+    text-wrap: pretty;
+  }
+
+  /* entrance: the hi and the arrow write themselves in, the dot stamps down */
+  @media (prefers-reduced-motion: no-preference) {
+    .hand-hi {
+      animation: write-across 700ms cubic-bezier(0.65, 0, 0.35, 1) 150ms both;
+    }
+
+    .hand-arrow {
+      animation: write-down 550ms cubic-bezier(0.65, 0, 0.35, 1) 900ms both;
+    }
+
+    .dot {
+      animation: stamp 450ms var(--ease-spring) 600ms both;
+    }
+  }
+
+  @keyframes write-across {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+
+  @keyframes write-down {
+    from { clip-path: inset(0 0 100% 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+
+  @keyframes stamp {
+    from { scale: 1.8; opacity: 0; }
+    to { scale: 1; opacity: 1; }
+  }
+</style>
