@@ -6,6 +6,8 @@
   being previewed in the index below.
   signature slot: once a clean handwritten "akchhya" exists, it goes over the
   bottom-right of the wordmark, tilted, in the accent.
+  the "proof" slot takes the stickers (ProofStrip.astro), which position
+  themselves against this header.
 */
 import Hi from '../assets/handwriting/hi.svg';
 import ArrowDown from '../assets/handwriting/arrow-down.svg';
@@ -36,10 +38,14 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
     </p>
     <p class="subline">researcher, builder, product nerd, reader. sometimes in the same hour.</p>
   </div>
+
+  <!-- proof stickers: in the flow on narrow screens, stuck beside "hi i'm" on wide ones -->
+  <slot name="proof" />
 </header>
 
 <style>
   .hero {
+    position: relative;
     container-type: inline-size;
     display: flex;
     flex-direction: column;
