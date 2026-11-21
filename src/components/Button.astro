@@ -10,15 +10,20 @@ interface Props extends Omit<HTMLAttributes<'button'>, 'type'> {
 // extra attributes (data-*, aria-*, hidden…) pass straight through
 const { variant = 'primary', href, type = 'button', class: extra, ...rest } = Astro.props;
 
-const base =
-  'inline-flex items-center gap-2 rounded-card border-2 border-line px-5 py-2.5 font-sans font-semibold text-small no-underline ' +
-  'transition-[translate,box-shadow] duration-200 ease-spring ' +
-  'hover:-translate-x-0.5 hover:-translate-y-0.5 active:translate-x-0 active:translate-y-0 active:shadow-none';
+const base = 'inline-flex items-center gap-2 font-sans font-semibold text-small no-underline';
+
+// primary and accent are paper you press (see the box rule in global.css).
+// ghost is just words, so it gets no box: an underline that fills with the accent.
+const pressable =
+  'paper px-5 py-2.5 transition-[translate,box-shadow] duration-200 ease-spring ' +
+  'hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-cut-lg active:translate-x-0 active:translate-y-0 active:shadow-none';
 
 const variants = {
-  primary: 'bg-strong text-surface shadow-cut hover:shadow-cut-lg',
-  accent: 'bg-accent text-on-accent shadow-cut hover:shadow-cut-lg',
-  ghost: 'bg-transparent text-text hover:shadow-cut',
+  primary: `${pressable} bg-strong text-surface`,
+  accent: `${pressable} bg-accent text-on-accent`,
+  ghost:
+    'py-1 text-text underline decoration-2 underline-offset-[0.3em] decoration-line ' +
+    'transition-[text-decoration-thickness,text-decoration-color] duration-200 hover:decoration-accent hover:decoration-[0.4em]',
 };
 
 const cls = [base, variants[variant], extra].filter(Boolean).join(' ');

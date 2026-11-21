@@ -108,6 +108,20 @@ html:active-view-transition-type(wipe)::view-transition-new(root) {
 }
 
 /*
+  the box rule
+  - a 2px ink edge means "this is a piece of paper": cards, stickers, swatches.
+  - the hard offset shadow means "you can press or pick this up". it only goes
+    on things you can click or drag, never on sections or plain content.
+  - everything else is type sitting straight on the page, no box.
+  `paper` is the clickable version: edge + corners + shadow in one place.
+*/
+@utility paper {
+  border: 2px solid var(--line);
+  border-radius: var(--radius-card);
+  box-shadow: 4px 4px 0 var(--line);
+}
+
+/*
   wrapper for masked text reveals (overflow: hidden).
   display/h1 lines are shorter than Bricolage's descenders, so pad the
   bottom by the descender depth and pull it back so layout doesn't move.

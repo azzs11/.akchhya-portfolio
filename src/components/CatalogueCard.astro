@@ -17,11 +17,14 @@ const tiltClass = {
   right: 'motion-safe:rotate-[var(--tilt)]',
   none: '',
 }[tilt];
+
+// box rule: only a card that links somewhere gets the shadow and the lift
+const surface = href
+  ? 'paper transition-[rotate,translate,box-shadow] duration-300 ease-spring hover:-translate-y-1 hover:shadow-cut-lg motion-safe:hover:rotate-0 motion-safe:focus-within:rotate-0'
+  : 'rounded-card border-2 border-line';
 ---
 
-<article
-  class={`group relative flex flex-col gap-3 rounded-card border-2 border-line bg-surface p-5 shadow-cut transition-[rotate,translate,box-shadow] duration-300 ease-spring hover:-translate-y-1 hover:shadow-cut-lg motion-safe:hover:rotate-0 motion-safe:focus-within:rotate-0 ${tiltClass}`}
->
+<article class={`group relative flex flex-col gap-3 bg-surface p-5 ${surface} ${tiltClass}`}>
   <header class="flex items-center justify-between gap-3">
     <span class="label">{date}</span>
     <span class="label rounded-sticker bg-accent px-2 py-0.5 text-on-accent">{status}</span>
