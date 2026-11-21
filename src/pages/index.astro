@@ -2,15 +2,12 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import CharacterSelect from '../components/CharacterSelect.astro';
-import ProofStrip from '../components/ProofStrip.astro';
 import SayHi from '../components/SayHi.astro';
 ---
 
-<Base title="akchhya singh" description="Researcher, builder, product nerd, reader. Pick a version.">
+<Base title="akchhya singh" description="Akchhya Singh: engineer and researcher in Bengaluru. Systems that hold up under load, research on linking heritage records, and a few poems.">
   <div class="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-14 sm:gap-20 sm:px-8 sm:py-20">
-    <Hero>
-      <ProofStrip slot="proof" />
-    </Hero>
+    <Hero />
     <CharacterSelect />
     <SayHi />
   </div>

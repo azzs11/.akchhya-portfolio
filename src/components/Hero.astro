@@ -6,8 +6,8 @@
   being previewed in the index below.
   signature slot: once a clean handwritten "akchhya" exists, it goes over the
   bottom-right of the wordmark, tilted, in the accent.
-  the "proof" slot takes the stickers (ProofStrip.astro), which position
-  themselves against this header.
+  below it, a short bio: the proof (paper, throughput, launch) lives in the
+  sentences, not in badges.
 */
 import Hi from '../assets/handwriting/hi.svg';
 import ArrowDown from '../assets/handwriting/arrow-down.svg';
@@ -36,16 +36,23 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
       pick a version
       <ArrowDown class="hand hand-arrow" aria-hidden="true" />
     </p>
-    <p class="subline">researcher, builder, product nerd, reader. sometimes in the same hour.</p>
+    <div class="bio">
+      <p>
+        I’m an engineer and researcher in Bengaluru. I build systems that hold up under load, like a rate limiter
+        that serves 140K requests a second, and I study how to link historical records that disagree with each other
+        without wasting an expert’s time.
+      </p>
+      <p>
+        My paper on knowledge-graph recommendation for cultural heritage appeared at IEEE ICICACS 2026. Along the way
+        I’ve helped a launch at Libra AI reach 1.8M impressions, mentored eight first-time researchers, and written the
+        occasional poem about all of it.
+      </p>
+    </div>
   </div>
-
-  <!-- proof stickers: in the flow on narrow screens, stuck beside "hi i'm" on wide ones -->
-  <slot name="proof" />
 </header>
 
 <style>
   .hero {
-    position: relative;
     container-type: inline-size;
     display: flex;
     flex-direction: column;
@@ -94,11 +101,11 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
     margin-bottom: -0.15em;
   }
 
-  /* sized so "akchhya." spans the column exactly */
+  /* big, but not the whole column: about four fifths of it */
   .wordmark {
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: 24.8cqi;
+    font-size: 19.5cqi;
     line-height: 0.82;
     letter-spacing: -0.055em;
     margin-left: -0.045em; /* optical: pull the a's side bearing to the edge */
@@ -131,14 +138,19 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
 
     .pick {
       grid-column: 1 / span 4;
+      grid-row: 1;
+      align-self: end; /* the arrow sits just above the index it points at */
     }
 
-    .subline {
-      grid-column: 7 / span 6;
+    .bio {
+      grid-column: 6 / span 7;
+      grid-row: 1;
     }
   }
 
+  /* narrow: bio first, then "pick a version" right above the index */
   .pick {
+    order: 2;
     display: flex;
     align-items: flex-start;
     gap: 0.5rem;
@@ -154,12 +166,24 @@ const updated = new Date().toLocaleDateString('en-GB', { month: 'short', year: '
     margin-top: 0.2rem;
   }
 
-  .subline {
-    font-family: var(--font-display);
-    font-size: var(--text-h3);
-    font-weight: 600;
-    line-height: 1.3;
+  .bio {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    max-width: 38rem;
+    font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+    line-height: 1.55;
     text-wrap: pretty;
+  }
+
+  /* the first sentence leads, set in the display face */
+  .bio p:first-child {
+    font-family: var(--font-display);
+    font-size: 1.2em;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    color: var(--strong);
   }
 
   /* entrance: the hi and the arrow write themselves in, the dot stamps down */
