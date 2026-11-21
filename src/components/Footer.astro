@@ -15,7 +15,14 @@ const year = new Date().getFullYear();
         <li><a href={contact.github} rel="me">github</a></li>
         <li><a href={contact.medium} rel="me">medium</a></li>
       </ul>
-      <p class="label">© {year} akchhya singh</p>
+      <p class="label flex items-center gap-2">
+        <!-- registration mark, the printer's target -->
+        <svg class="opacity-70" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
+          <circle cx="7" cy="7" r="3.5"></circle>
+          <path d="M7 0v14M0 7h14"></path>
+        </svg>
+        © {year} akchhya singh
+      </p>
     </div>
   </div>
 </footer>

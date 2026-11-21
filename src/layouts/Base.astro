@@ -70,7 +70,16 @@ const { title, description, room, noindex = false } = Astro.props;
       skip to content
     </a>
     <Nav />
-    <main id="main" class="flex-1">
+    <main id="main" class="relative flex-1">
+      <!-- crop marks at the corners of the content column (see print marks in global.css) -->
+      <div aria-hidden="true" class="pointer-events-none absolute inset-0 hidden sm:block">
+        <div class="relative mx-auto h-full max-w-6xl">
+          <span class="crop top-6 left-8"></span>
+          <span class="crop crop-tr top-6 right-8"></span>
+          <span class="crop crop-bl bottom-6 left-8"></span>
+          <span class="crop crop-br right-8 bottom-6"></span>
+        </div>
+      </div>
       <slot />
     </main>
     <Footer />
