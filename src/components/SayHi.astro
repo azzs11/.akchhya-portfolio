@@ -1,20 +1,220 @@
 ---
+/*
+  say hi, as a postcard: message on the left, address side on the right with
+  a perforated stamp and a postmark. the card itself is paper you can't click,
+  so it gets an edge but no shadow (box rule); the copy button is the only
+  pressable thing on it.
+*/
 import Button from './Button.astro';
 import { contact } from '../data/rooms';
+
+const year = new Date().getFullYear();
 ---
 
-<section aria-labelledby="say-hi" class="flex flex-col gap-5">
-  <h2 id="say-hi" class="text-h1">say hi</h2>
-  <p class="max-w-2xl">
-    open to software engineering and applied AI roles (remote or bangalore), and research collaborations.
-  </p>
-  <div class="flex flex-wrap items-center gap-4">
-    <!-- shown by the script, so no-JS visitors only see the mailto link -->
-    <Button variant="accent" data-copy-email={contact.email} hidden>copy email</Button>
-    <a href={`mailto:${contact.email}`} class="font-mono text-mono">{contact.email}</a>
-    <span class="sr-only" aria-live="polite" data-copy-status></span>
+<section aria-labelledby="say-hi" class="postcard-wrap">
+  <div class="postcard">
+    <div class="message">
+      <p class="label">postcard · {year}</p>
+      <h2 id="say-hi" class="text-h1">say hi</h2>
+      <p class="max-w-md">
+        open to software engineering and applied AI roles (remote or bangalore), and research collaborations.
+      </p>
+      <p class="ps text-small">
+        <span class="label">p.s.</span> press <kbd class="kbd label" data-kbd>ctrl k</kbd> anywhere on this site to jump straight to anything.
+      </p>
+    </div>
+
+    <div class="address">
+      <div class="stamp" aria-hidden="true">
+        <span class="stamp-mark">a<span class="stamp-dot"></span></span>
+        <span class="stamp-value">first class</span>
+      </div>
+
+      <svg class="postmark" viewBox="0 0 120 120" aria-hidden="true">
+        <defs>
+          <path id="postmark-ring" d="M60 60m-41 0a41 41 0 1 1 82 0a41 41 0 1 1-82 0"></path>
+        </defs>
+        <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="2"></circle>
+        <circle cx="60" cy="60" r="31" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+        <text font-family="var(--font-mono)" font-size="10" letter-spacing="2.4" fill="currentColor">
+          <textPath href="#postmark-ring">AKCHHYA.XYZ · SAY HI · {year} ·</textPath>
+        </text>
+        <text x="60" y="65" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="currentColor">{year}</text>
+      </svg>
+
+      <dl class="lines">
+        <dt class="label">to</dt>
+        <dd>akchhya singh</dd>
+        <dt class="label">at</dt>
+        <dd><a href={`mailto:${contact.email}`} class="font-mono text-mono">{contact.email}</a></dd>
+        <dt class="label">or</dt>
+        <dd class="text-small">
+          <a href={contact.github} rel="me">github</a> · <a href={contact.medium} rel="me">medium</a>
+        </dd>
+      </dl>
+
+      <div class="flex flex-wrap items-center gap-4">
+        <!-- shown by the script, so no-JS visitors only see the mailto link -->
+        <Button variant="accent" data-copy-email={contact.email} hidden>copy email</Button>
+        <span class="sr-only" aria-live="polite" data-copy-status></span>
+      </div>
+    </div>
   </div>
 </section>
+
+<style>
+  .postcard-wrap {
+    container-type: inline-size;
+  }
+
+  .postcard {
+    display: grid;
+    gap: 2rem;
+    padding: clamp(1.25rem, 4cqi, 2.75rem);
+    background-color: var(--surface);
+    border: 2px solid var(--line);
+    border-radius: var(--radius-card);
+    rotate: -0.6deg;
+  }
+
+  @container (min-width: 46rem) {
+    .postcard {
+      grid-template-columns: 1.1fr 1fr;
+      gap: 0;
+    }
+
+    .message {
+      padding-right: clamp(1.5rem, 4cqi, 3rem);
+      border-right: 1px solid var(--line); /* the line down the middle of every postcard */
+    }
+
+    .address {
+      padding-left: clamp(1.5rem, 4cqi, 3rem);
+    }
+  }
+
+  .message {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .address {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-top: 0.25rem;
+  }
+
+  /*
+    stamp: a block of accent with half-circle notches cut along every edge.
+    layer 1 is a grid of holes whose centres sit on the edges (offset half a
+    tile), layer 2 is a solid rectangle that fills the holes in the middle.
+    width and height are whole numbers of tiles so the notches line up.
+  */
+  .stamp {
+    --tile: 0.75rem;
+    --hole: 0.2rem;
+    align-self: flex-end;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: calc(var(--tile) * 9);
+    height: calc(var(--tile) * 11);
+    padding: 0.85rem 0.8rem;
+    background-color: var(--accent);
+    color: var(--on-accent);
+    rotate: 3deg;
+    mask:
+      radial-gradient(circle, #0000 var(--hole), #000 calc(var(--hole) + 0.5px))
+        calc(var(--tile) / -2) calc(var(--tile) / -2) / var(--tile) var(--tile) repeat,
+      linear-gradient(#000 0 0) center / calc(100% - 2 * var(--hole)) calc(100% - 2 * var(--hole)) no-repeat;
+    transition: background-color var(--duration-base) ease;
+  }
+
+  /* the printed frame inside the stamp */
+  .stamp::before {
+    content: "";
+    position: absolute;
+    inset: 0.5rem;
+    border: 1px solid var(--on-accent);
+    pointer-events: none;
+  }
+
+  .stamp {
+    position: relative;
+  }
+
+  .stamp-mark {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2.6rem;
+    line-height: 0.8;
+    letter-spacing: -0.05em;
+  }
+
+  .stamp-dot {
+    display: inline-block;
+    width: 0.17em;
+    height: 0.17em;
+    margin-left: 0.03em;
+    border-radius: 50%;
+    background-color: var(--on-accent);
+  }
+
+  .ps {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    max-width: 28rem;
+  }
+
+  .kbd {
+    padding: 0.1rem 0.35rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sticker);
+    white-space: nowrap;
+  }
+
+  .stamp-value {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* postmark lands half on the stamp, half on the card */
+  .postmark {
+    position: absolute;
+    top: 1.75rem;
+    right: 4.5rem;
+    width: 6.5rem;
+    color: var(--line);
+    opacity: 0.6;
+    rotate: -14deg;
+    pointer-events: none;
+  }
+
+  /* ── address lines ── */
+  .lines {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    column-gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .lines dt,
+  .lines dd {
+    padding-block: 0.55rem 0.35rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .lines dd {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+</style>
 
 <script>
   const btn = document.querySelector<HTMLButtonElement>('[data-copy-email]');
