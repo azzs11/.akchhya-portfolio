@@ -1,0 +1,344 @@
+---
+/*
+  /build, as a ledger: one project per full-width row, facts in mono columns,
+  the measured result on the right with its conditions underneath.
+
+  stack filter without js: a radio group, and one generated css rule per tag
+  hides the rows that don't carry it (:has on the list). the "showing n of m"
+  line is generated per filter too (css counters can't cross the container's
+  style containment); a tiny script mirrors it into a live region.
+*/
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+
+// ".net" can't be an id, so every tag gets a slug for ids and data attributes
+const slug = (t: string) => t.replace(/^\./, 'dot').replace(/[^a-z0-9]+/g, '-');
+
+const counts = new Map<string, number>();
+for (const p of projects) for (const t of p.data.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
+const tags = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+
+const total = projects.length;
+const filterCss = [
+  `.count::after { content: "showing ${total} of ${total}"; }`,
+  ...tags.map(([t, n]) => {
+    const f = `.ledger:has(#f-${slug(t)}:checked)`;
+    return (
+      `${f} .proj:not([data-tags~="${slug(t)}"]) { display: none; }\n` +
+      `${f} .count::after { content: "showing ${n} of ${total}"; }`
+    );
+  }),
+].join('\n');
+---
+
+<Base
+  title="engineering & projects · akchhya"
+  description="Systems I've designed, built and measured: Itihasa, Ratelab, ChronoLog, Sprout, a scalable email service and HeritageRec."
+  room="technobrat"
+>
+  <style is:inline set:html={filterCss} />
+
+  <div class="mx-auto flex max-w-6xl flex-col gap-12 px-4 py-14 sm:gap-16 sm:px-8 sm:py-20">
+    <header class="flex flex-col gap-5">
+      <p class="label">the technobrat · engineering & projects</p>
+      <h1 class="text-h1">engineering & projects</h1>
+      <p class="max-w-2xl font-display text-h3 font-semibold">
+        systems i’ve designed, built and measured. every number comes with the conditions it was measured under.
+      </p>
+    </header>
+
+    <div class="ledger">
+      <fieldset class="filter">
+        <legend class="label">filter by stack</legend>
+        <div class="chips">
+          <input type="radio" name="stack" id="f-all" value="all" class="sr-only" checked />
+          <label for="f-all" class="chip">all <span class="chip-n">{projects.length}</span></label>
+          {
+            tags.map(([t, n]) => (
+              <>
+                <input type="radio" name="stack" id={`f-${slug(t)}`} value={t} class="sr-only" />
+                <label for={`f-${slug(t)}`} class="chip">
+                  {t} <span class="chip-n">{n}</span>
+                </label>
+              </>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <ol class="rows">
+        {
+          projects.map((p, i) => {
+            const d = p.data;
+            const links = d.links.filter((l) => l.show);
+            return (
+              <li class="proj" data-tags={d.tags.map(slug).join(' ')}>
+                <article class="row" aria-labelledby={`p-${p.id}`}>
+                  <div class="row-main">
+                    <p class="row-num label" aria-hidden="true">
+                      {String(i + 1).padStart(2, '0')}
+                    </p>
+                    <h2 id={`p-${p.id}`} class="row-title">
+                      {d.title}
+                    </h2>
+                    <p class="row-summary">{d.summary}</p>
+                    <p class="row-stack">{d.stack.join(' · ')}</p>
+                    {links.length > 0 && (
+                      <ul class="row-links">
+                        {links.map((l) => (
+                          <li>
+                            <a href={l.href}>
+                              <span class="sr-only">{d.title} on </span>
+                              {l.label} <span aria-hidden="true">↗</span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <dl class="row-meta">
+                    {d.dates && (
+                      <>
+                        <dt>when</dt>
+                        <dd>{d.dates}</dd>
+                      </>
+                    )}
+                    <dt>role</dt>
+                    <dd>{d.role}</dd>
+                    {d.status && (
+                      <>
+                        <dt>status</dt>
+                        <dd>{d.status}</dd>
+                      </>
+                    )}
+                  </dl>
+
+                  {d.result && (
+                    <div class="row-result">
+                      <p class="label">{d.result.kind === 'scale' ? 'scale' : 'result'}</p>
+                      <p class="result-short">{d.result.short}</p>
+                      <p class="result-full">{d.result.full}</p>
+                    </div>
+                  )}
+                </article>
+              </li>
+            );
+          })
+        }
+      </ol>
+
+      <p class="count label" aria-hidden="true"></p>
+      <p class="sr-only" aria-live="polite" data-filter-status></p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .ledger {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  /* ── filter chips ── */
+  .filter {
+    order: -2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    cursor: pointer;
+    transition:
+      background-color var(--duration-quick) ease,
+      color var(--duration-quick) ease;
+  }
+
+  .chip:hover {
+    background-color: color-mix(in oklab, var(--accent) 35%, transparent);
+  }
+
+  .chip-n {
+    font-size: 0.75em;
+    opacity: 0.7;
+  }
+
+  input:checked + .chip {
+    background-color: var(--accent);
+    color: var(--on-accent);
+    border-color: var(--line);
+  }
+
+  input:focus-visible + .chip {
+    outline: 3px solid var(--line);
+    outline-offset: 3px;
+  }
+
+  /* ── count (text generated per filter in the frontmatter) ── */
+  .count {
+    order: -1;
+  }
+
+  /* ── rows ── */
+  .rows {
+    border-top: 1px solid var(--line);
+  }
+
+  .proj {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .row {
+    display: grid;
+    gap: 1.25rem;
+    padding-block: 1.75rem;
+  }
+
+  @container (min-width: 56rem) {
+    .row {
+      grid-template-columns: minmax(0, 1fr) 14.5rem 14.5rem;
+      column-gap: 2.5rem;
+      align-items: start;
+    }
+  }
+
+  .row-main {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    column-gap: 0.5rem;
+    row-gap: 0.6rem;
+    align-items: baseline;
+  }
+
+  .row-main > :not(.row-num) {
+    grid-column: 2;
+  }
+
+  .row-num {
+    grid-row: 1;
+  }
+
+  .row-title {
+    grid-row: 1;
+    font-size: clamp(2rem, 1.4rem + 2.4vw, 3.25rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+  }
+
+  .row-summary {
+    max-width: 40rem;
+    text-wrap: pretty;
+  }
+
+  .row-stack {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    opacity: 0.85;
+  }
+
+  .row-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    font-size: var(--text-small);
+    font-weight: 600;
+  }
+
+  /* facts in a mono column, labels in small caps-ish */
+  .row-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem 0.9rem;
+    align-content: start;
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    padding-left: 3rem;
+  }
+
+  .row-meta dt {
+    font-size: var(--text-label);
+    letter-spacing: var(--text-label--letter-spacing);
+    text-transform: uppercase;
+    opacity: 0.75;
+    padding-top: 0.1rem;
+  }
+
+  .row-result {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding-left: 3rem;
+  }
+
+  @container (min-width: 56rem) {
+    .row-meta,
+    .row-result {
+      padding-left: 0;
+      padding-top: 0.4rem;
+    }
+
+    .row-result {
+      text-align: right;
+    }
+  }
+
+  /* the number sits on an accent bar, like a figure marked in a lab book */
+  .result-short {
+    align-self: flex-start;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    padding: 0.1rem 0.4rem;
+    white-space: nowrap;
+    background-color: var(--accent);
+    color: var(--on-accent);
+  }
+
+  @container (min-width: 56rem) {
+    .result-short {
+      align-self: flex-end;
+    }
+  }
+
+  .result-full {
+    font-size: var(--text-small);
+    line-height: 1.45;
+  }
+</style>
+
+<script>
+  // mirror the visible count into a live region when the filter changes
+  const ledger = document.querySelector<HTMLElement>('.ledger');
+  const status = ledger?.querySelector<HTMLElement>('[data-filter-status]');
+
+  ledger?.addEventListener('change', (e) => {
+    const input = e.target as HTMLInputElement;
+    if (input.name !== 'stack' || !status) return;
+    const rows = [...ledger.querySelectorAll<HTMLElement>('.proj')];
+    const shown = rows.filter((r) => r.offsetParent !== null).length;
+    const what = input.value === 'all' ? 'all projects' : `${input.value} projects`;
+    status.textContent = `showing ${shown} of ${rows.length}: ${what}`;
+  });
+</script>

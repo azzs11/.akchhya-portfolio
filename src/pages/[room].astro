@@ -5,7 +5,7 @@ import { rooms, type Room } from '../data/rooms';
 
 export function getStaticPaths() {
   // rooms with a real page of their own (getStaticPaths can't see other frontmatter vars)
-  const finished = ['/research'];
+  const finished = ['/research', '/build'];
   return rooms
     .filter((room) => !finished.includes(room.href))
     .map((room) => ({ params: { room: room.href.slice(1) }, props: { room } }));
