@@ -23,7 +23,7 @@ const scale = [
   { name: 'h2', spec: '26 → 36px · 700 · 1.1 · -0.015em', cls: 'font-display text-h2 text-strong', sample: 'distributed rate limiter' },
   { name: 'h3', spec: '20 → 24px · 600 · 1.25', cls: 'font-display text-h3 text-strong', sample: 'two decisions and what i chose instead' },
   { name: 'body', spec: 'Geist · 17 → 18px · 1.6', cls: 'font-sans text-body', sample: 'A token bucket refills at a fixed rate and rejects requests once it is empty. The playground lets you change both and watch it happen.' },
-  { name: 'small', spec: 'Geist · 15px · 1.5', cls: 'font-sans text-small', sample: 'Published at ICICACS 2026 · 140K req/s · 1.8M launch impressions' },
+  { name: 'small', spec: 'Geist · 15px · 1.5', cls: 'font-sans text-small', sample: 'Published at ICICACS 2026 · 65% fewer Redis calls · 1.8M launch impressions' },
   { name: 'mono', spec: 'Geist Mono · 14px · 1.5', cls: 'font-mono text-mono', sample: 'const tokens = Math.min(capacity, tokens + rate * dt);' },
   { name: 'label', spec: 'Geist Mono · 12px · uppercase · +0.06em', cls: 'label', sample: '2026 · rust · tokio · redis' },
   { name: 'serif', spec: 'Instrument Serif italic · editorial only', cls: 'font-serif italic text-h2 font-normal', sample: '“the part of me that isn’t optimising anything.”' },
@@ -147,12 +147,12 @@ const themes = ['light', 'night'] as const;
                 <Button variant="ghost">ghost</Button>
               </div>
               <CatalogueCard
-                title="distributed rate limiter"
-                blurb="Token bucket in Rust, sharded over Redis. Holds 140K requests a second."
-                date="2025"
-                stack={['rust', 'tokio', 'redis']}
-                role="solo"
-                status="live"
+                title="ratelab"
+                blurb="Rust rate-limiting library: 5 algorithms, 5 cluster coordination strategies, benchmarked against an exact oracle."
+                date="2025–26"
+                stack={['rust', 'axum', 'redis']}
+                role="sole developer"
+                status="published"
                 href="#"
                 tilt={i % 2 === 0 ? 'left' : 'right'}
               />
