@@ -1,11 +1,14 @@
 ---
 // Placeholder for each room until its real page lands (phases 5 and 7).
-// A static file like src/pages/research.astro takes priority over this one.
 import Base from '../layouts/Base.astro';
 import { rooms, type Room } from '../data/rooms';
 
 export function getStaticPaths() {
-  return rooms.map((room) => ({ params: { room: room.href.slice(1) }, props: { room } }));
+  // rooms with a real page of their own (getStaticPaths can't see other frontmatter vars)
+  const finished = ['/research'];
+  return rooms
+    .filter((room) => !finished.includes(room.href))
+    .map((room) => ({ params: { room: room.href.slice(1) }, props: { room } }));
 }
 
 const { room } = Astro.props as { room: Room };

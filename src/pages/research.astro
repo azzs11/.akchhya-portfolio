@@ -1,0 +1,226 @@
+---
+/*
+  /research, laid out like an annotated paper: numbered sections, each block
+  with its facts (who, where, when, status) in the margin.
+  content rule: my independent entity resolution work and my RA work with
+  prof. alka rani are separate projects and stay separate here.
+*/
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Annotated from '../components/Annotated.astro';
+import Citation from '../components/Citation.astro';
+import { contact } from '../data/rooms';
+
+const papers = (await getCollection('papers')).sort((a, b) => b.data.year - a.data.year);
+
+const next = [
+  'When expert time is limited, which entity-matching decisions should a system ask a person to make, and which can it settle on its own?',
+  'How far can one human decision safely spread through a knowledge graph to resolve related cases?',
+  'Can an entity’s neighbourhood in the graph tell apart same-name and variant-name entities, such as two rulers called Shah Jahan, where text alone cannot?',
+];
+
+const askMeAbout = [
+  'budgeted, human-in-the-loop entity resolution',
+  'heritage ontologies: cidoc crm, the europeana data model',
+  'knowledge-graph recommendation',
+  'running a first research project',
+];
+---
+
+<Base
+  title="research · akchhya"
+  description="Budgeted human-in-the-loop entity resolution for heritage records, a published paper on knowledge-graph recommendation, and the questions I want to work on next."
+  room="researcher"
+>
+  <div class="mx-auto flex max-w-6xl flex-col gap-16 px-4 py-14 sm:gap-20 sm:px-8 sm:py-20">
+    <header class="flex flex-col gap-5">
+      <p class="label">the researcher · research</p>
+      <h1 class="text-h1">research</h1>
+      <p class="max-w-2xl font-display text-h3 font-semibold">
+        i link heritage records that disagree with each other, and spend an expert’s time only where it counts.
+      </p>
+    </header>
+
+    <section aria-labelledby="now" class="section">
+      <h2 id="now" class="section-head"><span class="section-num">1</span> now</h2>
+
+      <Annotated as="article" aria-labelledby="er-title">
+        <h3 id="er-title" class="text-h3">budgeted entity resolution for heritage records</h3>
+        <p class="mt-2 max-w-prose">
+          Resolving entities across conflicting heritage sources: Wikipedia in English, Hindi and Kannada, Wikidata,
+          and museum and library records. What’s new is treating expert time as a fixed budget. The system asks which
+          matches only a person can settle, routes just those to a volunteer or expert, and tests whether an entity’s
+          neighbourhood in the graph can separate same-name and variant-name entities that text alone cannot.
+        </p>
+        <Fragment slot="note">
+          <p>independent research</p>
+          <p>dsce, bengaluru</p>
+          <p>↳ <a href="#itihasa">data from itihasa</a></p>
+        </Fragment>
+      </Annotated>
+
+      <Annotated as="article" aria-labelledby="ra-title">
+        <h3 id="ra-title" class="text-h3">semantic web for heritage recommendation</h3>
+        <p class="mt-2 max-w-prose">
+          I gather sources and analyse where existing heritage recommendation frameworks fall short, comparing how each
+          models its data against cultural heritage ontologies such as CIDOC CRM and the Europeana Data Model.
+        </p>
+        <Fragment slot="note">
+          <p>research assistant</p>
+          <p>with prof. alka rani</p>
+          <p>aug 2026 – now</p>
+        </Fragment>
+      </Annotated>
+    </section>
+
+    <section aria-labelledby="published" class="section">
+      <h2 id="published" class="section-head"><span class="section-num">2</span> published</h2>
+      {
+        papers.map((paper) => (
+          <Annotated>
+            <Citation paper={paper} />
+            <Fragment slot="note">
+              <p>{paper.data.venueShort}</p>
+              {paper.data.place && <p>{paper.data.place}</p>}
+              {paper.data.dates && <p>{paper.data.dates}</p>}
+              {paper.data.pages && <p>pp. {paper.data.pages.replace('-', '–')}</p>}
+              {paper.data.presented && <p>presented by me</p>}
+            </Fragment>
+          </Annotated>
+        ))
+      }
+    </section>
+
+    <section aria-labelledby="itihasa" class="section">
+      <h2 id="itihasa" class="section-head"><span class="section-num">3</span> the platform: itihasa</h2>
+      <Annotated>
+        <p class="max-w-prose">
+          Itihasa is an open platform that reads and links manuscripts photographed by families and archives. Every
+          uncertain match goes to a volunteer or an expert within a fixed review budget, so the platform doubles as a
+          testbed: every human decision is recorded with its source and version history, which is the data my research
+          on budgeted human-in-the-loop entity resolution needs.
+        </p>
+        <Fragment slot="note">
+          <p>open platform</p>
+          <p>human decisions, versioned</p>
+          <p>↳ <a href="/build">how it’s built</a></p>
+        </Fragment>
+      </Annotated>
+    </section>
+
+    <section aria-labelledby="mentoring" class="section">
+      <h2 id="mentoring" class="section-head"><span class="section-num">4</span> mentoring</h2>
+      <Annotated>
+        <p class="max-w-prose">
+          I mentor eight women across two fifth-semester batches, with Prof. Alka Rani, through their first research
+          projects in semantic web and heritage recommendation: framing a problem, reviewing the literature and running
+          experiments.
+        </p>
+        <Fragment slot="note">
+          <p>8 students · 2 batches</p>
+          <p>with prof. alka rani</p>
+        </Fragment>
+      </Annotated>
+    </section>
+
+    <section aria-labelledby="next" class="section">
+      <h2 id="next" class="section-head"><span class="section-num">5</span> next</h2>
+      <p class="max-w-prose">Three questions I want to spend graduate school on.</p>
+      <ol class="questions">
+        {
+          next.map((q, i) => (
+            <li>
+              <span class="q-num" aria-hidden="true">q{i + 1}</span>
+              <p>{q}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section aria-labelledby="ask" class="section">
+      <h2 id="ask" class="section-head"><span class="section-num">6</span> ask me about</h2>
+      <div class="ask">
+        <ul class="flex flex-col gap-2">
+          {askMeAbout.map((t) => <li>{t}</li>)}
+        </ul>
+        <p class="text-small">
+          write to <a href={`mailto:${contact.email}`} class="font-mono">{contact.email}</a>
+        </p>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  /* numbered like a paper, on a hairline like a ruled notebook */
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--line);
+    font-size: var(--text-h2);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--text);
+  }
+
+  .questions {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 48rem;
+  }
+
+  .questions li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    align-items: baseline;
+  }
+
+  .questions p {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+
+  .q-num {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+  }
+
+  /* an index card left on the desk: paper edge, not clickable, so no shadow.
+     the accent rule near the top is the coloured header line index cards have */
+  .ask {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 30rem;
+    padding: 1.75rem 1.5rem 1.25rem;
+    border: 2px solid var(--line);
+    border-radius: var(--radius-card);
+    rotate: -0.8deg;
+    background: linear-gradient(var(--accent), var(--accent)) 0 0.75rem / 100% 2px no-repeat;
+  }
+
+  .ask li::before {
+    content: "→ " / ""; /* decorative: empty alt text so screen readers skip it */
+    font-family: var(--font-mono);
+  }
+</style>

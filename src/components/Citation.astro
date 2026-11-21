@@ -1,0 +1,126 @@
+---
+/*
+  a paper as a citation block: title, byline (my name marked), venue, and
+  two ways out: copy the bibtex, or open the doi. the card is paper you can't
+  click (edge, no shadow); the button inside is the pressable part.
+  without js the copy button stays hidden and the bibtex is still there,
+  in a <details> you can open and select.
+*/
+import type { CollectionEntry } from 'astro:content';
+import Button from './Button.astro';
+import { bibtex } from '../lib/bibtex';
+
+interface Props {
+  paper: CollectionEntry<'papers'>;
+}
+
+const { paper } = Astro.props;
+const p = paper.data;
+const bib = bibtex(paper);
+const kind = { conference: 'conference paper', journal: 'journal article', preprint: 'preprint' }[p.kind];
+---
+
+<article class="citation" aria-labelledby={`paper-${paper.id}`}>
+  <p class="label">{kind}{p.publisher && ` · ${p.publisher.toLowerCase()}`}</p>
+
+  <h3 id={`paper-${paper.id}`} class="citation-title">{p.title}</h3>
+
+  <p class="byline">
+    {
+      p.authors.map((a, i) => (
+        <>
+          {i > 0 && ', '}
+          {a.me ? <strong class="me">{a.family.toLowerCase()}</strong> : a.family.toLowerCase()}
+        </>
+      ))
+    }
+  </p>
+
+  {p.abstract && <p class="max-w-prose">{p.abstract}</p>}
+
+  <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+    <Button variant="accent" data-copy-bibtex hidden>copy bibtex</Button>
+    {p.doi && <Button variant="ghost" href={`https://doi.org/${p.doi}`}>doi ↗</Button>}
+    <span class="sr-only" aria-live="polite" data-bibtex-status></span>
+  </div>
+
+  <details class="bib">
+    <summary class="label">bibtex</summary>
+    <pre data-bibtex>{bib}</pre>
+  </details>
+</article>
+
+<style>
+  .citation {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: clamp(1.1rem, 3vw, 1.75rem);
+    border: 2px solid var(--line);
+    border-radius: var(--radius-card);
+  }
+
+  .citation-title {
+    font-size: var(--text-h2);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .byline {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+  }
+
+  /* my name, marked the way you'd underline yourself on a printed author list */
+  .me {
+    font-weight: 600;
+    /* a thin accent bar under the letters, never behind them (accent fails as a text background at night) */
+    padding-bottom: 0.15em;
+    background: linear-gradient(var(--accent), var(--accent)) 0 100% / 100% 0.18em no-repeat;
+  }
+
+  .bib summary {
+    cursor: pointer;
+    width: fit-content;
+  }
+
+  .bib pre {
+    margin-top: 0.6rem;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    border-left: 1px solid var(--line);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.citation').forEach((card) => {
+    const btn = card.querySelector<HTMLButtonElement>('[data-copy-bibtex]');
+    const pre = card.querySelector<HTMLElement>('[data-bibtex]');
+    const status = card.querySelector<HTMLElement>('[data-bibtex-status]');
+    if (!btn || !pre || !navigator.clipboard) return;
+
+    btn.hidden = false;
+    const label = btn.textContent;
+    let timer: number | undefined;
+
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(pre.textContent ?? '');
+      } catch {
+        card.querySelector('details')?.setAttribute('open', '');
+        return;
+      }
+      btn.textContent = 'copied!';
+      if (status) status.textContent = 'bibtex copied to clipboard';
+      clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        btn.textContent = label;
+        if (status) status.textContent = '';
+      }, 1600);
+    });
+  });
+</script>
