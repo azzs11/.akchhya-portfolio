@@ -8,7 +8,7 @@ import '@fontsource/instrument-serif/400-italic.css';
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
-import { roomKeys, type RoomKey } from '../data/rooms';
+import { roomKeys, nightRooms, type RoomKey } from '../data/rooms';
 
 interface Props {
   title: string;
@@ -34,14 +34,17 @@ const { title, description, room, noindex = false } = Astro.props;
     {noindex && <meta name="robots" content="noindex" />}
 
     <!-- runs before first paint: theme, remembered room, and room-change wipe -->
-    <script is:inline define:vars={{ roomKeys }}>
+    <script is:inline define:vars={{ roomKeys, nightRooms }}>
       const d = document.documentElement;
       const read = (s, k) => { try { return s.getItem(k); } catch { return null; } };
       const write = (s, k, v) => { try { s.setItem(k, v); } catch {} };
 
+      // a saved choice wins; then the room's own default (the researcher opens
+      // at night); then the system setting
       let theme = read(localStorage, 'theme');
       if (theme !== 'light' && theme !== 'night') {
-        theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'light';
+        if (nightRooms.includes(d.dataset.room)) theme = 'night';
+        else theme = matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'light';
       }
       d.dataset.theme = theme;
 

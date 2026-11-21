@@ -8,6 +8,8 @@ export interface Room {
   label: string;
   href: string;
   intro: string;
+  /** theme for first-time visitors to this room; their own saved choice still wins */
+  defaultTheme?: 'night';
 }
 
 export const rooms: Room[] = [
@@ -24,6 +26,7 @@ export const rooms: Room[] = [
     label: 'research',
     href: '/research',
     intro: 'i like data that’s messy, incomplete and hiding something.',
+    defaultTheme: 'night', // a library after hours
   },
   {
     key: 'product',
@@ -49,6 +52,9 @@ export const rooms: Room[] = [
 ];
 
 export const roomKeys = rooms.map((r) => r.key);
+
+/** rooms that open in night mode unless the visitor has picked a theme */
+export const nightRooms = rooms.filter((r) => r.defaultTheme === 'night').map((r) => r.key);
 
 export function roomForPath(pathname: string): Room | undefined {
   return rooms.find((r) => pathname === r.href || pathname.startsWith(`${r.href}/`));
