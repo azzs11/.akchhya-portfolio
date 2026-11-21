@@ -14,6 +14,7 @@
   /* palette */
   --color-paper: #fbf0e8;
   --color-ink: #1e0a2e;
+  --color-graphite: #1c1a19; /* night canvas: warm near-black, so night reads as paper in the dark, not purple */
   --color-plum: #4a1468;
   --color-lilac: #c9b6ff;
   --color-lime: #d4f36b;
@@ -107,7 +108,7 @@
 }
 
 [data-theme="night"] {
-  --surface: var(--color-ink);
+  --surface: var(--color-graphite);
   --text: var(--color-paper);
   --strong: var(--color-paper); /* plum on ink is 1.4:1, so headings go paper */
   --link: var(--color-lilac); /* 10.2:1 on ink */

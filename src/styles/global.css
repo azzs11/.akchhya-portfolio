@@ -120,11 +120,11 @@ html:active-view-transition-type(wipe)::view-transition-new(root) {
   --grain-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2.2 0 0 0 -1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-[data-theme="night"] { --grain: 0.07; }
+[data-theme="night"] { --grain: 0.1; } /* a bit more at night: texture instead of colour */
 [data-room="caterpillar"],
 [data-room="organiser"] { --grain: 0.18; }
 [data-theme="night"][data-room="caterpillar"],
-[data-theme="night"][data-room="organiser"] { --grain: 0.11; }
+[data-theme="night"][data-room="organiser"] { --grain: 0.14; }
 
 body::after {
   content: "";
