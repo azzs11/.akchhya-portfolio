@@ -1,0 +1,22 @@
+# one entry per paper. the id becomes the bibtex key.
+# pages: crossref lists "1-8"; using the proceedings page range below.
+
+- id: rani2026heritage
+  title: "Knowledge Graph-Based Recommendation for Cultural Heritage Collections: Hybrid SimRank, Learning-to-Rank, and Semantic Embedding Approaches"
+  authors:
+    - { given: Alka, family: Rani }
+    - { given: Akchhya, family: Singh, me: true }
+    - { given: Aryan, family: Anand }
+    - { given: Akshay, family: Narayanan }
+    - { given: Ashvin, family: Joby }
+  kind: conference
+  venue: "2026 4th International Conference on Integrated Circuits and Communication Systems (ICICACS)"
+  venueShort: icicacs 2026
+  place: Raichur, India
+  dates: 22–23 May 2026
+  publisher: IEEE
+  pages: "1468-1475"
+  year: 2026
+  doi: 10.1109/ICICACS68679.2026.11578736
+  presented: true
+  project: heritagerec
